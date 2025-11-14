@@ -1,0 +1,127 @@
+{
+  "resourceType": "Encounter",
+  "presets": [
+    {
+      "label": "Inpatient completed Q1 2025",
+      "params": {
+        "class": "IMP",
+        "status": "completed",
+        "date-start": "ge2025-01-01",
+        "end-date": "le2025-03-31",
+        "length": "gt1"
+      }
+    },
+    {
+      "label": "By patient HKID + doctor code",
+      "params": {
+        "subject.identifier": "hkid|A123456(7)",
+        "participant.identifier": "DRY"
+      }
+    },
+    {
+      "label": "ED SNOMED reason + location ED01 last7d",
+      "params": {
+        "type": "http://snomed.info/sct|50849002",
+        "location": "Location/ED01",
+        "date": "ge2025-10-21"
+      }
+    },
+    {
+      "label": "By service-provider + team",
+      "params": {
+        "service-provider": "Organization/H01",
+        "careteam": "CareTeam/CT22"
+      }
+    }
+  ],
+  "params": [
+    {
+      "name": "identifier",
+      "type": "token"
+    },
+    {
+      "name": "status",
+      "type": "token",
+      "options": [
+        "planned",
+        "in-progress",
+        "on-hold",
+        "completed",
+        "cancelled",
+        "entered-in-error",
+        "unknown"
+      ]
+    },
+    {
+      "name": "class",
+      "type": "token",
+      "help": "e.g., IMP | EMER | AMB"
+    },
+    {
+      "name": "type",
+      "type": "token",
+      "help": "system|code"
+    },
+    {
+      "name": "date",
+      "type": "date",
+      "comparators": true
+    },
+    {
+      "name": "date-start",
+      "type": "date",
+      "comparators": true
+    },
+    {
+      "name": "end-date",
+      "type": "date",
+      "comparators": true
+    },
+    {
+      "name": "patient",
+      "type": "reference"
+    },
+    {
+      "name": "subject",
+      "type": "reference"
+    },
+    {
+      "name": "participant",
+      "type": "reference"
+    },
+    {
+      "name": "participant.identifier",
+      "type": "token",
+      "help": "doctor code or similar"
+    },
+    {
+      "name": "location",
+      "type": "reference"
+    },
+    {
+      "name": "length",
+      "type": "quantity",
+      "comparators": true
+    },
+    {
+      "name": "reason-code",
+      "type": "token"
+    },
+    {
+      "name": "diagnosis-code",
+      "type": "token"
+    },
+    {
+      "name": "service-provider",
+      "type": "reference"
+    },
+    {
+      "name": "careteam",
+      "type": "reference"
+    },
+    {
+      "name": "appointment",
+      "type": "reference"
+    }
+  ]
+}

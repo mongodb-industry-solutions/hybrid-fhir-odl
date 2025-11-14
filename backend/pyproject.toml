@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fhir-mongo-toolkit"
+version = "0.1.0"
+description = "Toolkit to generate synthetic FHIR resources and publish to MongoDB, with CLI and FastAPI API."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+  "pymongo>=4.6",
+  "python-dotenv>=1.0",
+  "typer>=0.12",
+  "fastapi>=0.115",
+  "uvicorn>=0.30",
+  "pydantic>=2.8",
+  "faker>=26.0",
+  "certifi>=2024.0"
+]
+
+[project.scripts]
+fhir-tool = "fhir_toolkit.cli:main"

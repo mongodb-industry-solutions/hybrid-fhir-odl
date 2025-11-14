@@ -1,0 +1,139 @@
+{
+  "resourceType": "Patient",
+  "presets": [
+    {
+      "label": "By HKID + city",
+      "params": {
+        "identifier": "hkid|A123456(7)",
+        "address-city": "barcelona"
+      }
+    },
+    {
+      "label": "40-60yo + female + GP=Practitioner/DRX",
+      "params": {
+        "birthdate": "ge1965-01-01,le1985-12-31",
+        "gender": "female",
+        "general-practitioner": "Practitioner/DRX"
+      }
+    },
+    {
+      "label": "Name contains Garc\u00eda",
+      "params": {
+        "name": "garcia"
+      }
+    },
+    {
+      "label": "MRN in H01",
+      "params": {
+        "identifier": "mrn:H01|123456"
+      }
+    }
+  ],
+  "params": [
+    {
+      "name": "active",
+      "type": "token",
+      "help": "true|false"
+    },
+    {
+      "name": "identifier",
+      "type": "token",
+      "help": "system|value e.g. hkid|V, mrn:HOSP|V"
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "help": "matches any HumanName field"
+    },
+    {
+      "name": "family",
+      "type": "string"
+    },
+    {
+      "name": "given",
+      "type": "string"
+    },
+    {
+      "name": "phonetic",
+      "type": "string",
+      "help": "requires phonetic mirror"
+    },
+    {
+      "name": "gender",
+      "type": "token",
+      "options": [
+        "male",
+        "female",
+        "other",
+        "unknown"
+      ]
+    },
+    {
+      "name": "birthdate",
+      "type": "date",
+      "comparators": true
+    },
+    {
+      "name": "deceased",
+      "type": "token",
+      "help": "true|false"
+    },
+    {
+      "name": "death-date",
+      "type": "date",
+      "comparators": true
+    },
+    {
+      "name": "address",
+      "type": "string"
+    },
+    {
+      "name": "address-city",
+      "type": "string"
+    },
+    {
+      "name": "address-state",
+      "type": "string"
+    },
+    {
+      "name": "address-country",
+      "type": "string"
+    },
+    {
+      "name": "address-postalcode",
+      "type": "string"
+    },
+    {
+      "name": "address-use",
+      "type": "token"
+    },
+    {
+      "name": "email",
+      "type": "token"
+    },
+    {
+      "name": "phone",
+      "type": "token"
+    },
+    {
+      "name": "telecom",
+      "type": "token"
+    },
+    {
+      "name": "language",
+      "type": "token"
+    },
+    {
+      "name": "general-practitioner",
+      "type": "reference"
+    },
+    {
+      "name": "organization",
+      "type": "reference"
+    },
+    {
+      "name": "link",
+      "type": "reference"
+    }
+  ]
+}

@@ -1,0 +1,255 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Force main content area to have consistent background */
+main {
+  background-color: var(--color-background) !important;
+  min-height: 100vh;
+}
+
+/* Ensure the body and html also use the background color */
+html, body {
+  background-color: var(--color-background);
+}
+
+/* Default theme variables (light theme) */
+:root {
+  /* Core colors - FHIR themed */
+  --color-primary: #00A86B;
+  --color-primary-hover: #008F5B;
+  --color-background: #FFFFFF;
+  --color-surface: #F8FAFC;
+  --color-surface-hover: #F1F5F9;
+  --color-border: #E2E8F0;
+  --color-text: #1E293B;
+  --color-text-secondary: #64748B;
+
+  /* Status colors */
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+
+  /* Auto-calculated contrast colors */
+  --color-primary-text: #FFFFFF;
+  --color-success-text: #FFFFFF;
+  --color-warning-text: #000000;
+  --color-error-text: #FFFFFF;
+
+  /* App-specific colors */
+  --color-sidebar: var(--color-surface);
+  --color-sidebar-hover: var(--color-surface-hover);
+  --color-active: var(--color-primary);
+}
+
+/* Base styles */
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Component classes */
+@layer components {
+  /* Surface styles */
+  .surface {
+    background-color: var(--color-surface);
+  }
+
+  .surface-hover:hover {
+    background-color: var(--color-surface-hover);
+  }
+
+  /* Text colors */
+  .text-theme-primary {
+    color: var(--color-text);
+  }
+
+  .text-theme-secondary {
+    color: var(--color-text-secondary);
+  }
+
+  /* Button styles */
+  .btn-primary {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 200ms;
+    background-color: var(--color-primary);
+    color: var(--color-primary-text);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--color-primary-hover);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-secondary {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 200ms;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--color-surface-hover);
+  }
+
+  .btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Card styles */
+  .card {
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+
+  /* Input styles */
+  .input {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 200ms;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
+
+  .input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(0, 168, 107, 0.1);
+  }
+
+  .input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Select styles */
+  .select {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 200ms;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
+
+  .select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(0, 168, 107, 0.1);
+  }
+
+  .select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/* Utility classes */
+@layer utilities {
+  /* Background utilities */
+  .bg-background { background-color: var(--color-background); }
+  .bg-surface { background-color: var(--color-surface); }
+  .bg-surface-hover { background-color: var(--color-surface-hover); }
+  .bg-primary { background-color: var(--color-primary); }
+  .bg-primary-hover { background-color: var(--color-primary-hover); }
+  .bg-success { background-color: var(--color-success); }
+  .bg-warning { background-color: var(--color-warning); }
+  .bg-error { background-color: var(--color-error); }
+
+  /* Text color utilities */
+  .text-primary { color: var(--color-primary); }
+  .text-success { color: var(--color-success); }
+  .text-warning { color: var(--color-warning); }
+  .text-error { color: var(--color-error); }
+  .text-primary-text { color: var(--color-primary-text); }
+  .text-success-text { color: var(--color-success-text); }
+  .text-warning-text { color: var(--color-warning-text); }
+  .text-error-text { color: var(--color-error-text); }
+
+  /* Border utilities */
+  .border-theme { border-color: var(--color-border); }
+  .border-primary { border-color: var(--color-primary); }
+
+  /* Scrollbar styling */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: var(--color-border);
+    border-radius: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-text-secondary);
+  }
+}
+
+/* Remove spinner from number inputs */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Animation for theme transitions */
+* {
+  transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+/* Focus styles for accessibility */
+.focus-ring:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-background), 0 0 0 4px var(--color-primary);
+}
+
+/* Custom animations */
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
