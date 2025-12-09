@@ -1,11 +1,66 @@
-# FHIR Hybrid Tapdata Project
+# FHIR Hybrid Data Management Platform
 
 A comprehensive FHIR R4 compliant healthcare data management system with MongoDB backend, featuring advanced search capabilities and an interactive API demonstrator.
+
+## 🚀 Quick Start - Ready to Run!
+
+**Everything is set up and ready!** Just follow these two simple steps:
+
+### Step 1: Start Backend (Terminal 1)
+
+From the project root:
+
+```bash
+./start-server.sh
+```
+
+**Expected output:**
+```
+Starting FHIR Mongo Toolkit API server...
+API will be available at: http://localhost:8000
+API Documentation at: http://localhost:8000/docs
+
+INFO:     Uvicorn running on http://0.0.0.0:8000
+INFO:     Application startup complete.
+```
+
+**Test it:**
+```bash
+curl http://localhost:8000/health
+# Should return: {"status":"ok","tenant":"tenant-1"}
+```
+
+### Step 2: Start Frontend (Terminal 2)
+
+From the project root:
+
+```bash
+cd frontend
+npm run dev
+```
+
+**Expected output:**
+```
+▲ Next.js 14.2.33
+- Local:        http://localhost:3000
+✓ Ready in 2-3s
+```
+
+### Step 3: Open Browser
+
+Visit **http://localhost:3000** and you'll see:
+
+1. **Header** with FHIR branding and "Backend Connected" indicator (green dot)
+2. **Stats Cards** showing: MongoDB, FHIR R4, Synthetic, FastAPI
+3. **FHIR Tabs** with three sections:
+   - **Resource Browser**: View and search FHIR resources
+   - **Synthetic Data**: Generate test data
+   - **API Tester**: Test endpoints interactively
 
 ## 🏗️ Project Structure
 
 ```
-tapdata-hybrid-fhir/
+hybrid-odl/
 ├── backend/                    # Python FastAPI + MongoDB
 │   ├── fhir_toolkit/          # Main application package
 │   │   ├── api.py             # FastAPI endpoints (3 APIs)
@@ -53,8 +108,25 @@ tapdata-hybrid-fhir/
    - Accelerated and canonical search modes
    - Cross-resource queries (Patient → Encounter relationships)
 
-### Interactive API Demonstrator
+### Interactive Web Application
 
+#### 1. Resource Browser Tab
+- View all FHIR resources from MongoDB
+- Filter by resource type (Patient, Encounter, Practitioner, CareTeam)
+- Search by HKID, case number, codes
+- Click to view full resource details
+- Side-by-side JSON view with both FHIR resource and envelope data
+
+#### 2. Synthetic Data Tab
+- Generate test data with one click
+- Configure:
+  - Number of patients (default: 5)
+  - Encounters per patient (default: 2)
+  - Practitioners (default: 10)
+  - Care teams (default: 5)
+- Wipe all data option (with confirmation)
+
+#### 3. API Tester Tab
 - **31+ pre-built query examples** with real data
 - **One-click execution** - no typing required
 - **Cross-resource demonstrations** - Patient-Encounter relationships
@@ -63,47 +135,36 @@ tapdata-hybrid-fhir/
 - **Dual search modes** - Accelerated (fast) vs Canonical (spec-compliant)
 - **Debug mode** - View MongoDB filters
 
-## 🚀 Quick Start
+## 🎯 Getting Started - First Use
 
-### Prerequisites
+### 1. Generate Sample Data
 
-- Python 3.11+
-- Node.js 20+
-- MongoDB Atlas account (or local MongoDB)
+Once both servers are running:
 
-### 1. Backend Setup
+1. Visit http://localhost:3000
+2. Go to "FHIR Data Management" → "Synthetic Data" tab
+3. Configure your data generation settings (or use defaults)
+4. Click "Generate All" to create sample data
+5. Wait for the success message
 
-```bash
-# Set environment variables
-cp .env.local.example .env.local
-# Edit .env.local with your MongoDB URI and tenant
+### 2. Browse Your Data
 
-# Start backend server
-./start-server.sh
+1. Switch to the "Resource Browser" tab
+2. You should see a list of FHIR resources
+3. Try filtering by resource type (Patient, Encounter, etc.)
+4. Click on a resource to view full details
 
-# Backend runs on http://localhost:8000
-```
+### 3. Test API Endpoints
 
-### 2. Frontend Setup
-
-```bash
-# Start frontend development server  
-./start-frontend.sh
-
-# Frontend runs on http://localhost:3000
-```
-
-### 3. Generate Sample Data
-
-Visit http://localhost:3000 and:
-1. Go to "FHIR Data Management" → "Synthetic Data" tab
-2. Click "Generate All" to create sample data
-3. Switch to "API Tester" tab to explore
+1. Go to the "API Tester" tab
+2. Select an endpoint from the dropdown
+3. Click any example button (e.g., "Female Patients")
+4. Query executes automatically with results displayed
 
 ## 📚 API Documentation
 
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
+- **Swagger UI**: http://localhost:8000/docs (Interactive testing)
+- **ReDoc**: http://localhost:8000/redoc (Clean documentation)
 - **OpenAPI Spec**: http://localhost:8000/openapi.json
 
 All three APIs are organized with clear tags in the documentation.
@@ -157,16 +218,6 @@ NEXT_PUBLIC_ENABLE_FHIR=true
 - Slower but spec-compliant
 - Best for standards validation
 
-## 📖 Documentation
-
-- [Setup Guide](docs/SETUP_COMPLETE.md)
-- [API Documentation](docs/API_DOCS_INTEGRATION.md)
-- [Three APIs Overview](docs/THREE_APIS_COMPLETE.md)
-- [Web Application Guide](docs/WEB_APP_COMPLETE.md)
-- [Frontend Access](docs/FRONTEND_ACCESS.md)
-- [Quick Start](QUICK_START.md)
-- [Getting Started](START_HERE.md)
-
 ## 🏥 Healthcare Data Model
 
 ### FHIR Envelope Pattern
@@ -208,6 +259,138 @@ This hybrid approach provides:
 - CPI (Clinical Process Improvement) workflows
 - Team and ward-based queries
 
+## 🛠️ Troubleshooting
+
+### Backend Issues
+
+**Backend won't start:**
+
+*Error*: `bad interpreter: No such file or directory`
+*Solution*: Fixed! The script now uses `python -m uvicorn`
+
+*Error*: `ModuleNotFoundError: No module named 'certifi'`
+*Solution*:
+```bash
+cd backend
+source .venv/bin/activate
+pip install certifi
+```
+
+*Error*: `pymongo.errors.ServerSelectionTimeoutError`
+*Solution*: Check MongoDB connection:
+```bash
+cd backend
+cat .env
+# Verify MONGODB_URI is correct
+```
+
+### Frontend Issues
+
+**Frontend won't start:**
+
+*Error*: `Cannot find module 'autoprefixer'`
+*Solution*: Fixed! Dependencies are installed
+
+*Error*: Module not found errors
+*Solution*:
+```bash
+cd frontend
+rm -rf .next node_modules
+npm install
+npm run dev
+```
+
+### Application Issues
+
+**Backend connected but no data:**
+Generate synthetic data via the web interface or CLI:
+```bash
+cd backend
+source .venv/bin/activate
+fhir-tool seed --patients 5 --encounters-per-patient 2
+```
+
+**API calls fail with CORS errors:**
+The app uses an API proxy at `/api/internal/[...path]` which prevents CORS issues. If you still see them:
+1. Restart both backend and frontend
+2. Check `.env.local` in frontend has correct BACKEND_URL
+3. Check browser DevTools Network tab for actual errors
+
+## 🎨 Customization
+
+### Customize the Theme
+Edit `frontend/app/globals.css`:
+```css
+:root {
+  --color-primary: #00A86B;  /* Change this emerald green color */
+}
+```
+
+### Add More Data
+```bash
+cd backend
+source .venv/bin/activate
+fhir-tool seed --patients 50 --encounters-per-patient 5
+```
+
+## 🚀 Production Deployment
+
+### Backend Deployment
+1. Update `.env` with production MongoDB URI
+2. Set up proper authentication
+3. Deploy to AWS, Google Cloud, or your preferred platform
+4. Use gunicorn or similar for production ASGI server
+
+### Frontend Deployment
+```bash
+cd frontend
+npm run build
+npm start
+```
+Then deploy to Vercel, Netlify, or your preferred platform.
+
+## 📊 Port Reference
+
+| Service | Port | URL |
+|---------|------|-----|
+| Backend API | 8000 | http://localhost:8000 |
+| API Docs | 8000 | http://localhost:8000/docs |
+| Frontend | 3000 | http://localhost:3000 |
+| MongoDB | 27017 | (Atlas cloud) |
+
+## 📂 Important File Locations
+
+| Component | Location |
+|-----------|----------|
+| Backend Code | `backend/fhir_toolkit/` |
+| Backend Config | `backend/.env` |
+| Frontend App | `frontend/` |
+| FHIR Components | `frontend/components/views/fhir/` |
+| API Proxy | `frontend/app/api/internal/[...path]/route.js` |
+| Styles | `frontend/app/globals.css` |
+
+## ✅ Success Checklist
+
+After following the quick start, you should have:
+
+- [ ] Backend starts without errors
+- [ ] Health check returns `{"status":"ok"}`
+- [ ] Frontend starts without errors
+- [ ] Browser shows http://localhost:3000
+- [ ] Green "Backend Connected" indicator visible
+- [ ] Four stat cards visible (MongoDB, FHIR R4, Synthetic, FastAPI)
+- [ ] Three tabs (Resource Browser, Synthetic Data, API Tester)
+- [ ] Can generate synthetic data
+- [ ] Can browse resources
+- [ ] Can test API endpoints
+- [ ] No console errors in browser DevTools
+
+## 🛠️ Prerequisites
+
+- Python 3.11+
+- Node.js 20+
+- MongoDB Atlas account (or local MongoDB)
+
 ## 🤝 Contributing
 
 This is a demonstration/reference implementation showing:
@@ -217,13 +400,23 @@ This is a demonstration/reference implementation showing:
 - Multi-API architecture (Admin, App, FHIR)
 - Interactive API exploration tools
 
-## 📝 License
-
-[Your License Here]
-
 ## 🙏 Acknowledgments
 
 - Built with FastAPI, Next.js 14, and MongoDB
 - FHIR R4 specification by HL7
 - Tailwind CSS for styling
 - Monaco Editor for JSON viewing
+
+## 📝 License
+
+[Your License Here]
+
+---
+
+**Ready to get started?** 🚀
+
+1. **Terminal 1**: `./start-server.sh`
+2. **Terminal 2**: `cd frontend && npm run dev`
+3. **Browser**: http://localhost:3000
+
+Generate some data, explore the API, and start building!
