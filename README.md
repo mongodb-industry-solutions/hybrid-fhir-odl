@@ -57,6 +57,57 @@ Visit **http://localhost:3000** and you'll see:
    - **Synthetic Data**: Generate test data
    - **API Tester**: Test endpoints interactively
 
+## 🛠️ Alternative Deployment Methods
+
+### Using Makefile (Recommended)
+
+For easier development and deployment, use the included Makefile:
+
+**Quick Development Setup:**
+```bash
+# Install all dependencies
+make install
+
+# Start both backend and frontend in development mode
+make dev
+```
+
+**Docker Deployment:**
+```bash
+# Build and start with Docker
+make docker-build
+make up
+
+# View logs
+make logs
+
+# Stop containers
+make down
+```
+
+**Individual Services:**
+```bash
+# Start only backend (API server)
+make backend
+
+# Start only frontend (web app)
+make frontend
+```
+
+**Other Useful Commands:**
+```bash
+# See all available commands
+make help
+
+# Clean all build artifacts
+make clean
+
+# Restart Docker containers
+make restart
+```
+
+The Makefile provides a unified interface for all development and deployment tasks, making it easier to work with the project regardless of your preferred method.
+
 ## 🏗️ Project Structure
 
 ```
