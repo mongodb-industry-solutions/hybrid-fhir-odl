@@ -30,4 +30,5 @@ echo "Press Ctrl+C to stop the server"
 echo ""
 
 # Use python -m to avoid shebang path issues
-.venv/bin/python -m uvicorn fhir_toolkit.api:app --host 0.0.0.0 --port 3100 --reload
+# .venv/bin/python -m uvicorn fhir_toolkit.api:app --host 0.0.0.0 --port 3100 --reload
+./.venv/Scripts/python -m uvicorn fhir_toolkit.api:app --host 0.0.0.0 --port 3100 --reload
