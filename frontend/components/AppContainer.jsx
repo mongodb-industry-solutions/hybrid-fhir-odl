@@ -11,7 +11,7 @@ const AppContainer = () => {
       <header className="bg-slate-800 border-b border-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
-            <CobrandedLogo size="lg" />
+            <CobrandedLogo size="lg" datalabOnly />
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
                 <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
@@ -33,7 +33,7 @@ const AppContainer = () => {
       <footer className="mt-12 pb-8 border-t border-slate-700 pt-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center gap-4">
-            <CobrandedLogo size="sm" className="opacity-70" />
+            <CobrandedLogo size="sm" className="opacity-70" datalabOnly />
             <p className="text-center text-sm text-slate-500">
               Hybrid FHIR & Customer API Platform • MongoDB + FastAPI + React
             </p>

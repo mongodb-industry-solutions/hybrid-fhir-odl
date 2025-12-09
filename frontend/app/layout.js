@@ -1,8 +1,8 @@
 import './globals.css'
 
 export const metadata = {
-  title: 'MongoDB Healthcare Data Lab | Powered by TapData',
-  description: 'FHIR Data Management Platform - MongoDB Healthcare Data Lab powered by TapData for clinical data integration and interoperability',
+  title: 'MongoDB Healthcare Data Lab - FHIR Data Management Platform',
+  description: 'FHIR Data Management Platform - MongoDB Healthcare Data Lab for clinical data integration and interoperability',
 };
 
 export default function RootLayout({ children }) {
