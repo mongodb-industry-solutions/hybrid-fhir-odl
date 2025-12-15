@@ -4,7 +4,7 @@ import React from "react";
 import { Book, ExternalLink, Activity, Server, Shield, Database } from "lucide-react";
 
 export default function FhirApiDocs() {
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://backend:3100";
 
   return (
     <div className="space-y-6">

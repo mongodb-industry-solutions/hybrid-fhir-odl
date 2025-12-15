@@ -50,29 +50,33 @@ function CustomerApiDocumentation() {
       </div>
 
       <div className="grid gap-4">
-        {/* PATIENT_BY_HKID */}
+        {/* PATIENT_BY_LOCAL_ID */}
         <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
-          <h4 className="text-lg font-semibold text-purple-400 mb-2">1. PATIENT_BY_HKID</h4>
+          <h4 className="text-lg font-semibold text-purple-400 mb-2">1. PATIENT_BY_LOCAL_ID</h4>
           <div className="space-y-2 text-sm">
             <div>
               <span className="font-medium text-slate-300">MDM:</span>
-              <span className="ml-2 text-slate-400">MDM_HKPMI_patient_api</span>
+              <span className="ml-2 text-slate-400">MDM_PMI_patient_api</span>
             </div>
             <div>
               <span className="font-medium text-slate-300">Endpoints:</span>
               <div className="ml-2 space-y-1 mt-1">
                 <div className="bg-slate-900 rounded px-2 py-1 font-mono text-xs">
-                  <span className="text-emerald-400">GET</span> /api/v1/patient/_by-hkid/
+                  <span className="text-emerald-400">GET</span> /api/v1/patient/_by-local-id/
                 </div>
                 <div className="bg-slate-900 rounded px-2 py-1 font-mono text-xs">
-                  <span className="text-blue-400">POST</span> /api/v1/patient/_by-hkid/find
+                  <span className="text-blue-400">POST</span> /api/v1/patient/_by-local-id/find
+                </div>
+                <div className="bg-slate-900 rounded px-2 py-1 font-mono text-xs text-slate-500">
+                  <span className="text-emerald-400">GET</span> /api/v1/patient/_by-hkid/ (legacy)
                 </div>
               </div>
             </div>
             <div>
               <span className="font-medium text-slate-300">Parameters:</span>
               <ul className="ml-2 mt-1 space-y-1 text-slate-400">
-                <li>• <code className="text-purple-300">hkid</code> - Hong Kong ID</li>
+                <li>• <code className="text-purple-300">local_id</code> - Local Patient ID</li>
+                <li>• <code className="text-purple-300">hkid</code> - Hong Kong ID (legacy)</li>
                 <li>• <code className="text-purple-300">hospCode</code> - Hospital Code</li>
                 <li>• <code className="text-purple-300">page</code> - Page number (default: 1)</li>
                 <li>• <code className="text-purple-300">limit</code> - Records per page (default: 20)</li>
@@ -81,29 +85,33 @@ function CustomerApiDocumentation() {
           </div>
         </div>
 
-        {/* PMI_CASE_BY_HKID */}
+        {/* PMI_CASE_BY_LOCAL_ID */}
         <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
-          <h4 className="text-lg font-semibold text-purple-400 mb-2">2. PMI_CASE_BY_HKID</h4>
+          <h4 className="text-lg font-semibold text-purple-400 mb-2">2. PMI_CASE_BY_LOCAL_ID</h4>
           <div className="space-y-2 text-sm">
             <div>
               <span className="font-medium text-slate-300">MDM:</span>
-              <span className="ml-2 text-slate-400">MDM_HKPMI_pmi_case</span>
+              <span className="ml-2 text-slate-400">MDM_PMI_pmi_case</span>
             </div>
             <div>
               <span className="font-medium text-slate-300">Endpoints:</span>
               <div className="ml-2 space-y-1 mt-1">
                 <div className="bg-slate-900 rounded px-2 py-1 font-mono text-xs">
-                  <span className="text-emerald-400">GET</span> /api/v1/pmi_case/_by-hkid/
+                  <span className="text-emerald-400">GET</span> /api/v1/pmi_case/_by-local-id/
                 </div>
                 <div className="bg-slate-900 rounded px-2 py-1 font-mono text-xs">
-                  <span className="text-blue-400">POST</span> /api/v1/pmi_case/_by-hkid/find
+                  <span className="text-blue-400">POST</span> /api/v1/pmi_case/_by-local-id/find
+                </div>
+                <div className="bg-slate-900 rounded px-2 py-1 font-mono text-xs text-slate-500">
+                  <span className="text-emerald-400">GET</span> /api/v1/pmi_case/_by-hkid/ (legacy)
                 </div>
               </div>
             </div>
             <div>
               <span className="font-medium text-slate-300">Parameters:</span>
               <ul className="ml-2 mt-1 space-y-1 text-slate-400">
-                <li>• <code className="text-purple-300">hkid</code> - Hong Kong ID</li>
+                <li>• <code className="text-purple-300">local_id</code> - Local Patient ID</li>
+                <li>• <code className="text-purple-300">hkid</code> - Hong Kong ID (legacy)</li>
                 <li>• <code className="text-purple-300">hospCode</code> - Hospital Code</li>
                 <li>• <code className="text-purple-300">patientKey</code> - Patient Key</li>
                 <li>• <code className="text-purple-300">page</code> - Page number (default: 1)</li>
@@ -125,7 +133,7 @@ function CustomerApiDocumentation() {
           <div className="space-y-2 text-sm">
             <div>
               <span className="font-medium text-slate-300">MDM:</span>
-              <span className="ml-2 text-slate-400">MDM_HPI_cpi_case</span>
+              <span className="ml-2 text-slate-400">MDM_PI_cpi_case</span>
             </div>
             <div>
               <span className="font-medium text-slate-300">Endpoints:</span>
@@ -166,7 +174,7 @@ function CustomerApiDocumentation() {
           <div className="space-y-2 text-sm">
             <div>
               <span className="font-medium text-slate-300">MDM:</span>
-              <span className="ml-2 text-slate-400">MDM_HPI_cpi_case</span>
+              <span className="ml-2 text-slate-400">MDM_PI_cpi_case</span>
             </div>
             <div>
               <span className="font-medium text-slate-300">Endpoints:</span>

@@ -4,7 +4,7 @@ from .config import settings
 from .search_config import allowed_fields
 import uuid
 
-HKID_SYSTEM = "hkid"
+LOCAL_ID_SYSTEM = "local_id"
 CASE_NUM_SYSTEM = "caseNum"
 MRN_PREFIX = "mrn:"  # we expect MRN identifiers with system like "mrn:QH"
 SPECIALIST_ROLE_CODES: Set[str] = {"SPRF", "CON", "CONS", "SPECIALIST", "SPC"}
@@ -73,7 +73,9 @@ def compute_search(resource: Dict[str, Any], app: Optional[Dict[str, Any]] = Non
         # Stable link key used by PMI/CPI helpers (FHIR-first: just reuse Patient.id)
         _put("patientKey", resource.get("id"))
         # Identifiers & demographics
-        _put("hkid", _get_identifier(resource, HKID_SYSTEM, exact=True))
+        _put("local_id", _get_identifier(resource, LOCAL_ID_SYSTEM, exact=True))
+        # Keep hkid for customer API backward compatibility
+        _put("hkid", _get_identifier(resource, LOCAL_ID_SYSTEM, exact=True))
         _put("gender", resource.get("gender"))
         _put("dob", resource.get("birthDate"))
         # Names
@@ -90,10 +92,10 @@ def compute_search(resource: Dict[str, Any], app: Optional[Dict[str, Any]] = Non
         if addrs:
             _put("city", addrs[0].get("city"))
             _put("district", addrs[0].get("district") or addrs[0].get("state"))
-        # Hong Kong ccCodes (array of up to 6 ints)
+        # Local region ccCodes (array of up to 6 ints)
         cc_from_ext: List[int] = []
         for ext in resource.get("extension", []) or []:
-            if ext.get("url") == "http://example.org/hk/StructureDefinition/ccCodes":
+            if ext.get("url") == "http://example.org/local/StructureDefinition/ccCodes":
                 v = ext.get("valueInteger")
                 if isinstance(v, int):
                     cc_from_ext.append(v)
@@ -121,11 +123,13 @@ def compute_search(resource: Dict[str, Any], app: Optional[Dict[str, Any]] = Non
         period = resource.get("period") or {}
         s["start"] = period.get("start")
         s["end"] = period.get("end")
-        # Subject HKID and patientKey (from reference)
+        # Subject Local ID and patientKey (from reference)
         subj = resource.get("subject") or {}
         if "identifier" in subj:
             idf = subj["identifier"]
-            if isinstance(idf, dict) and idf.get("system") == HKID_SYSTEM:
+            if isinstance(idf, dict) and idf.get("system") == LOCAL_ID_SYSTEM:
+                s["local_id"] = idf.get("value")
+                # Keep hkid for customer API backward compatibility
                 s["hkid"] = idf.get("value")
         # Extract Patient/{id} -> patientKey
         ref = subj.get("reference") or ""

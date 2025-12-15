@@ -10,10 +10,24 @@ const BACKEND_PATH = "/api/internal";
 
 // Customer API endpoints configuration
 const API_ENDPOINTS = {
+  PATIENT_BY_LOCAL_ID: {
+    name: "PATIENT_BY_LOCAL_ID",
+    title: "Patient Search by Local ID",
+    description: "Find patient records by Local ID with optional hospital filtering",
+    getPath: "/api/v1/patient/_by-local-id/",
+    postPath: "/api/v1/patient/_by-local-id/find",
+    mdm: "MDM_PMI_patient_api",
+    params: [
+      { name: "local_id", type: "string", required: false, help: "Local Patient ID (e.g., A123456(7))" },
+      { name: "hospCode", type: "string", required: false, help: "Hospital Code" },
+      { name: "page", type: "number", required: false, default: 1, help: "Page number" },
+      { name: "limit", type: "number", required: false, default: 20, help: "Records per page" }
+    ]
+  },
   PATIENT_BY_HKID: {
     name: "PATIENT_BY_HKID",
-    title: "Patient Search by HKID",
-    description: "Find patient records by Hong Kong ID with optional hospital filtering",
+    title: "Patient Search by HKID (Legacy)",
+    description: "Find patient records by Hong Kong ID with optional hospital filtering - deprecated, use Local ID",
     getPath: "/api/v1/patient/_by-hkid/",
     postPath: "/api/v1/patient/_by-hkid/find",
     mdm: "MDM_HKPMI_patient_api",
@@ -24,10 +38,25 @@ const API_ENDPOINTS = {
       { name: "limit", type: "number", required: false, default: 20, help: "Records per page" }
     ]
   },
+  PMI_CASE_BY_LOCAL_ID: {
+    name: "PMI_CASE_BY_LOCAL_ID",
+    title: "PMI Cases by Local ID",
+    description: "Retrieve Patient Management Information cases by Local ID",
+    getPath: "/api/v1/pmi_case/_by-local-id/",
+    postPath: "/api/v1/pmi_case/_by-local-id/find",
+    mdm: "MDM_PMI_pmi_case",
+    params: [
+      { name: "local_id", type: "string", required: false, help: "Local Patient ID" },
+      { name: "hospCode", type: "string", required: false, help: "Hospital Code" },
+      { name: "patientKey", type: "string", required: false, help: "Patient Key" },
+      { name: "page", type: "number", required: false, default: 1, help: "Page number" },
+      { name: "limit", type: "number", required: false, default: 20, help: "Records per page" }
+    ]
+  },
   PMI_CASE_BY_HKID: {
     name: "PMI_CASE_BY_HKID",
-    title: "PMI Cases by HKID",
-    description: "Retrieve Patient Management Information cases by HKID",
+    title: "PMI Cases by HKID (Legacy)",
+    description: "Retrieve Patient Management Information cases by HKID - deprecated, use Local ID",
     getPath: "/api/v1/pmi_case/_by-hkid/",
     postPath: "/api/v1/pmi_case/_by-hkid/find",
     mdm: "MDM_HKPMI_pmi_case",
@@ -45,7 +74,7 @@ const API_ENDPOINTS = {
     description: "Retrieve Clinical Process Improvement cases by care team filters",
     getPath: "/api/v1/cpi_case/_by-team/",
     postPath: "/api/v1/cpi_case/_by-team/find",
-    mdm: "MDM_HPI_cpi_case",
+    mdm: "MDM_PI_cpi_case",
     params: [
       { name: "hospCode", type: "string", required: true, help: "Hospital Code (Required)" },
       { name: "wardCode", type: "string", required: false, help: "Ward Code" },
@@ -63,7 +92,7 @@ const API_ENDPOINTS = {
     description: "Retrieve Clinical Process Improvement cases by medical officer filters",
     getPath: "/api/v1/cpi_case/_by-mo/",
     postPath: "/api/v1/cpi_case/_by-mo/find",
-    mdm: "MDM_HPI_cpi_case",
+    mdm: "MDM_PI_cpi_case",
     params: [
       { name: "hospCode", type: "string", required: true, help: "Hospital Code (Required)" },
       { name: "doctorCode", type: "string", required: false, help: "Doctor Code" },
@@ -128,7 +157,7 @@ function ParamField({ param, value, onChange }) {
 }
 
 export default function CustomerApiTester() {
-  const [selectedEndpoint, setSelectedEndpoint] = useState("PATIENT_BY_HKID");
+  const [selectedEndpoint, setSelectedEndpoint] = useState("PATIENT_BY_LOCAL_ID");
   const [method, setMethod] = useState("GET");
   const [params, setParams] = useState({});
   const [response, setResponse] = useState(null);
@@ -218,8 +247,16 @@ export default function CustomerApiTester() {
     // Load preset based on available sample values
     const preset = {};
 
+    if (selectedEndpoint === "PATIENT_BY_LOCAL_ID" && sampleValues.hkid) {
+      preset.local_id = sampleValues.hkid;  // Use hkid as sample local_id
+    }
+
     if (selectedEndpoint === "PATIENT_BY_HKID" && sampleValues.hkid) {
       preset.hkid = sampleValues.hkid;
+    }
+
+    if (selectedEndpoint === "PMI_CASE_BY_LOCAL_ID" && sampleValues.hkid) {
+      preset.local_id = sampleValues.hkid;  // Use hkid as sample local_id
     }
 
     if (selectedEndpoint === "PMI_CASE_BY_HKID" && sampleValues.hkid) {

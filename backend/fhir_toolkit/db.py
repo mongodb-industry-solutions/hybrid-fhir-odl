@@ -104,6 +104,12 @@ def create_indexes(force: bool = False) -> Dict[str, str]:
     # --------------------
     # Patient accelerated
     # --------------------
+    result["idx_patient_local_id"] = _ensure_index(
+        coll,
+        [("tenant", ASCENDING), ("resourceType", ASCENDING), ("search.local_id", ASCENDING)],
+        name="idx_patient_local_id",
+    )
+    # Keep hkid index for backward compatibility
     result["idx_patient_hkid"] = _ensure_index(
         coll,
         [("tenant", ASCENDING), ("resourceType", ASCENDING), ("search.hkid", ASCENDING)],
@@ -196,6 +202,12 @@ def create_indexes(force: bool = False) -> Dict[str, str]:
     else:
         result["idx_encounter_period"] = "disabled"
 
+    result["idx_encounter_by_patient_local_id"] = _ensure_index(
+        coll,
+        [("tenant", ASCENDING), ("resourceType", ASCENDING), ("search.local_id", ASCENDING)],
+        name="idx_encounter_by_patient_local_id",
+    )
+    # Keep hkid index for backward compatibility
     result["idx_encounter_by_patient_hkid"] = _ensure_index(
         coll,
         [("tenant", ASCENDING), ("resourceType", ASCENDING), ("search.hkid", ASCENDING)],

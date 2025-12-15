@@ -2,7 +2,14 @@
   "resourceType": "Patient",
   "presets": [
     {
-      "label": "By HKID + city",
+      "label": "By Local ID + city",
+      "params": {
+        "identifier": "local_id|A123456(7)",
+        "address-city": "barcelona"
+      }
+    },
+    {
+      "label": "By HKID + city (deprecated)",
       "params": {
         "identifier": "hkid|A123456(7)",
         "address-city": "barcelona"
