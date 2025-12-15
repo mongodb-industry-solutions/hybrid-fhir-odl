@@ -60,6 +60,7 @@ def _phone(resource: Dict[str, Any], use: str) -> Optional[str]:
 def build_patient_payload(
     resource: Dict[str, Any],
     app: Dict[str, Any],
+    doc_id: Optional[Any] = None,
 ) -> Dict[str, Any]:
     """Assemble the PATIENT_BY_HKID response body."""
 
@@ -68,9 +69,20 @@ def build_patient_payload(
         {"hospCode": ident["system"], "mrn": ident["value"]}
         for ident in _get_identifiers(resource, "mrn")
     ]
+    patient_key = _resource_id(resource)
+    hospital_data = [
+        {
+            "_id": f"{patient_key}:{entry['hospCode']}" if patient_key and entry.get("hospCode") else None,
+            "mrn": entry.get("mrn"),
+            "patientKey": patient_key,
+            "hospCode": entry.get("hospCode"),
+        }
+        for entry in medical_rec_nums
+    ]
+    last_updated = (resource.get("meta") or {}).get("lastUpdated")
     out: Dict[str, Any] = {
-        "_id": _resource_id(resource),
-        "dobStr": resource.get("birthDate"),
+        "_id": str(doc_id) if doc_id is not None else patient_key,
+        "dobStr": app.get("dobStr") or resource.get("birthDate"),
         "deathDate": resource.get("deceasedDateTime"),
         "deathFlag": resource.get("deceasedBoolean"),
         "dob": resource.get("birthDate"),
@@ -79,7 +91,7 @@ def build_patient_payload(
         "chiName": _first_text(resource.get("name") or [], language="zh"),
         "hkid": _get_identifier(resource, "hkid"),
         "medicalRecNum": medical_rec_nums,
-        "hospitalData": medical_rec_nums,
+        "hospitalData": app.get("hospitalData") or hospital_data,
         "homePhone": _phone(resource, "home"),
         "officePhone": _phone(resource, "work"),
         "otherPhone": _phone(resource, "other"),
@@ -95,10 +107,14 @@ def build_patient_payload(
         "exactDobFlag": app.get("exactDobFlag"),
         "lastPayCode": app.get("lastPayCode"),
         "otherDocNum": _get_identifier(resource, "doc:other") or app.get("otherDocNum"),
-        "patientKey": _resource_id(resource),
+        "patientKey": patient_key,
+        "patientName": app.get("patientName") or _first_text(resource.get("name") or []),
+        "accessCode": app.get("accessCode"),
+        "deathIndicator": app.get("deathIndicator") or ("Y" if resource.get("deceasedBoolean") else "N"),
         "ccCodes": app.get("ccCodes", []),
         "hospCode": ((resource.get("managingOrganization") or {}).get("reference") or "").split("/", 1)[-1] or None,
-        "last_update_datetime": (resource.get("meta") or {}).get("lastUpdated"),
+        "last_update_datetime": last_updated,
+        "lastUpdateDatetime": app.get("lastUpdateDatetime") or last_updated,
     }
     return out
 
@@ -106,6 +122,7 @@ def build_patient_payload(
 def build_encounter_payload(
     resource: Dict[str, Any],
     app: Dict[str, Any],
+    doc_id: Optional[Any] = None,
     episode: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     period = resource.get("period") or {}
@@ -114,8 +131,9 @@ def build_encounter_payload(
     discharge = hospitalization.get("dischargeDisposition", {}).get("coding", [{}])[0]
     service_type = ((resource.get("serviceType") or {}).get("coding") or [{}])[0].get("code")
     admit_source = ((hospitalization.get("admitSource") or {}).get("coding") or [{}])[0].get("code")
+    encounter_id = str(doc_id) if doc_id is not None else _resource_id(resource)
     out: Dict[str, Any] = {
-        "_id": _resource_id(resource),
+        "_id": encounter_id,
         "caseNum": _get_identifier(resource, "caseNum"),
         "hospCode": ((resource.get("serviceProvider") or {}).get("reference") or "").split("/", 1)[-1] or None,
         "admissionDate": period.get("start"),
@@ -142,15 +160,16 @@ def build_encounter_payload(
 def build_cpi_payload(
     resource: Dict[str, Any],
     app: Dict[str, Any],
+    doc_id: Optional[Any] = None,
     episode: Optional[Dict[str, Any]] = None,
     patient_snapshot: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
-    base = build_encounter_payload(resource, app, episode)
+    base = build_encounter_payload(resource, app, doc_id=doc_id, episode=episode)
     base.update(
         {
             "sourceCode": ((resource.get("hospitalization") or {}).get("admitSource") or {}).get("coding", [{}])[0].get("code"),
             "cpiPatient": patient_snapshot,
-            "dischargeInformation": _build_discharge_information(resource),
+            "dischargeInformation": _build_discharge_information(resource, str(doc_id) if doc_id is not None else base.get("_id")),
         }
     )
     return base
@@ -178,7 +197,7 @@ def _care_team_code(resource: Dict[str, Any]) -> Optional[str]:
     return None
 
 
-def _build_discharge_information(resource: Dict[str, Any]) -> List[Dict[str, Any]]:
+def _build_discharge_information(resource: Dict[str, Any], parent_id: Optional[str]) -> List[Dict[str, Any]]:
     info: List[Dict[str, Any]] = []
     period = resource.get("period") or {}
     hosp_code = ((resource.get("serviceProvider") or {}).get("reference") or "").split("/", 1)[-1] or None
@@ -192,6 +211,7 @@ def _build_discharge_information(resource: Dict[str, Any]) -> List[Dict[str, Any
     if any([specialty, specialist_code, doctor_code, team_code, hosp_code, case_num]):
         info.append(
             {
+                "_id": f"{parent_id}:discharge:0" if parent_id else None,
                 "specialty": specialty,
                 "specialistIc": specialist_code,
                 "moInChargeId": doctor_code,

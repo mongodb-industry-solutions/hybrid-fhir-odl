@@ -1,0 +1,499 @@
+--- PAGE 1 ---
+APIandMDMBuilding
+1.PATIENT_BY_HKID
+1.1APIDetails
+AccessPath
+RequestMethod AccessPath
+POST http://dmpcdcvmctst71b:3080/api/v1/patient/_by-hkid/find
+GET http://dmpcdcvmctst71b:3080/api/v1/patient/_by-hkid/
+ParameterList
+ParameterNameType Defaults Constraint Description
+page number 1 NotRequiredPaginationNumber
+limit number 20 NotRequiredNumberofrecordsreturnedperpage
+hospCode string NotRequired
+hkid string NotRequired
+ResponseSample
+ResponseSample
+{
+  "data": [
+    {
+      "_id": "string",
+      "dobStr": "string",
+      "officePhone": "string",
+      "deathDate": "2019-08-24T14:15:22Z",
+      "deathFlag": true,
+      "chiName": "string",
+      "race": "string",1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+--- PAGE 2 ---
+      "hospCode": "string",
+      "last_update_datetime": "string",
+      "sex": "string",
+      "homePhone": "string",
+      "lastPayCode": "string",
+      "medicalRecNum": [
+        "string"
+      ],
+      "hkid": "string",
+      "religion": "string",
+      "otherDocNum": "string",
+      "exactDobFlag": true,
+      "otherPhone": "string",
+      "dob": "2019-08-24T14:15:22Z",
+      "name": "string",
+      "patientKey": "string",
+      "ccCodes": [
+        "string"
+      ],
+      "maritalStatus": "string",
+      "fullAddressChi": "string",
+      "fullAddress": "string",
+      "documentCode": "string",
+      "lastDocumentType": "string",
+      "documentType": "string"
+    }
+  ],
+  "count": 0
+} 
+1.2MDMInformation
+MDMandFieldInformation
+MDMName：
+MDM_HKPMI_patient_api
+MDMFields:11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+--- PAGE 3 ---
+MDMBuildingProcess
+2.PMI_CASE_BY_HKID
+--- PAGE 4 ---
+2.1APIDetails
+AccessPath
+RequestMethod AccessPath
+POST http://dmpcdcvmctst71b:3080/api/v1/pmi_case/_by-hkid/find
+GET http://dmpcdcvmctst71b:3080/api/v1/pmi_case/_by-hkid/
+ParameterList
+ParameterNameType Defaults Constraint Description
+page number 1 NotRequiredPaginationNumber
+limit number 20 NotRequiredNumberofrecordsreturnedperpage
+hospCode string NotRequired
+hkid string NotRequired
+patientKey string NotRequired
+ResponseSample
+ResponseSample
+{
+  "data": [
+    {
+      "_id": "string",
+      "caseNum": "string",
+      "hospCode": "string",
+      "admissionDate": "2019-08-24T14:15:22Z",
+      "caseType": "string",
+      "dischargeCode": "string",
+      "dischargeDate": "2019-08-24T14:15:22Z",
+      "lastBedNum": "string",
+      "lastSpecCode": "string",
+      "wardClass": "string",
+      "wardCode": "string",
+      "patientKey": "string",
+      "patientType": "string",
+      "sourceHospCode": "string",1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+--- PAGE 5 ---
+      "sourceIndicator": "string",
+      "status": "string",
+      "patientGroup": "string",
+      "patient": {
+        "_id": "string",
+        "ccCodes": [
+          "string"
+        ],
+        "chiName": "string",
+        "deathDate": "2019-08-24T14:15:22Z",
+        "deathFlag": true,
+        "dob": "2019-08-24T14:15:22Z",
+        "exactDobFlag": true,
+        "hkid": "string",
+        "homePhone": "string",
+        "hospCode": "string",
+        "lastPayCode": "string",
+        "lastUpdateDatetime": "string",
+        "maritalStatus": "string",
+        "medicalRecNum": [
+          "string"
+        ],
+        "name": "string",
+        "officePhone": "string",
+        "otherDocNum": "string",
+        "otherPhone": "string",
+        "patientKey": "string",
+        "race": "string",
+        "religion": "string",
+        "sex": "string",
+        "documentCode": "string",
+        "documentType": "string",
+        "lastDocumentType": "string",
+        "fullAddress": "string",
+        "fullAddressChi": "string"
+      }
+    }
+  ],
+  "count": 0
+}
+2.2MDMInformation
+MDMandFieldInformation
+MDMName：18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+--- PAGE 6 ---
+MDM_HKPMI_pmi_case
+MDMFields:
+--- PAGE 7 ---
+
+--- PAGE 8 ---
+MDMBuildingProcess
+3.CPI_CASE_BY_TEAM
+3.1APIDetails
+AccessPath
+RequestMethod AccessPath
+POST http://dmpcdcvmctst71b:3080/api/v1/cpi_case/_by-team/find
+GET http://dmpcdcvmctst71b:3080/api/v1/pmi_case/_by-team/
+ParameterList
+ParameterNameType Defaults Constraint Description
+page number 1 NotRequiredPaginationNumber
+limit number 20 NotRequiredNumberofrecordsreturnedperpage
+hospCode string Required
+wardCode string NotRequired
+--- PAGE 9 ---
+specCode string NotRequired
+teamCode string NotRequired
+statusCode string NotRequired
+caseType string NotRequired
+ResponseSample
+ResponseSample
+{
+  "data": [
+    {
+      "_id": "string",
+      "caseNum": "string",
+      "hospCode": "string",
+      "admissionDate": "2019-08-24T14:15:22Z",
+      "caseType": "string",
+      "dischargeCode": "string",
+      "lastBedNum": "string",
+      "lastSpecCode": "string",
+      "lastWardClass": "string",
+      "lastWardCode": "string",
+      "patientKey": "string",
+      "sourceCode": "string",
+      "statusCode": "string",
+      "cpiPatient": {
+        "_id": "string",
+        "accessCode": 0,
+        "chiName": "string",
+        "deathDate": "2019-08-24T14:15:22Z",
+        "deathIndicator": "string",
+        "dob": "2019-08-24T14:15:22Z",
+        "hkid": "string",
+        "patientKey": "string",
+        "patientName": "string",
+        "sex": "string",
+        "hospitalData": [
+          {
+            "_id": "string",
+            "mrn": "string",
+            "patientKey": "string",
+            "hospCode": "string"
+          }1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+--- PAGE 10 ---
+        ]
+      },
+      "dischargeInformation": [
+        {
+          "specialty": "string",
+          "hospCode": "string",
+          "caseNum": "string",
+          "specialistIc": "string",
+          "moInChargeId": "string",
+          "dischargeTeam": "string",
+          "_id": "string",
+          "createDate": "2019-08-24T14:15:22Z"
+        }
+      ]
+    }
+  ],
+  "count": 0
+}
+3.2MDMInformation
+MDMandFieldInformation
+MDMName：
+MDM_HPI_cpi_case
+MDMFields:35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+--- PAGE 11 ---
+MDMBuildingProcess
+--- PAGE 12 ---
+4.CPI_CASE_BY_MO
+4.1APIDetails
+AccessPath
+RequestMethod AccessPath
+POST http://dmpcdcvmctst71b:3080/api/v1/cpi_case/_by-mo/find
+GET http://dmpcdcvmctst71b:3080/api/v1/cpi_case/_by-mo/
+ParameterList
+ParameterNameType Defaults Constraint Description
+page number 1 NotRequiredPaginationNumber
+limit number 20 NotRequiredNumberofrecordsreturnedperpage
+hospCode string Required
+doctorCode string NotRequired
+specialistCode string NotRequired
+statusCode string AC NotRequired
+caseType array:string["I","A"] NotRequired
+--- PAGE 13 ---
+ResponseSample
+ResponseSample
+{
+  "data": [
+    {
+      "_id": "string",
+      "caseNum": "string",
+      "hospCode": "string",
+      "admissionDate": "2019-08-24T14:15:22Z",
+      "caseType": "string",
+      "dischargeCode": "string",
+      "lastBedNum": "string",
+      "lastSpecCode": "string",
+      "lastWardClass": "string",
+      "lastWardCode": "string",
+      "patientKey": "string",
+      "sourceCode": "string",
+      "statusCode": "string",
+      "cpiPatient": {
+        "_id": "string",
+        "accessCode": 0,
+        "chiName": "string",
+        "deathDate": "2019-08-24T14:15:22Z",
+        "deathIndicator": "string",
+        "dob": "2019-08-24T14:15:22Z",
+        "hkid": "string",
+        "patientKey": "string",
+        "patientName": "string",
+        "sex": "string",
+        "hospitalData": [
+          {
+            "_id": "string",
+            "mrn": "string",
+            "patientKey": "string",
+            "hospCode": "string"
+          }
+        ]
+      },
+      "dischargeInformation": [
+        {
+          "specialty": "string",
+          "hospCode": "string",
+          "caseNum": "string",
+          "specialistIc": "string",
+          "moInChargeId": "string",1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+--- PAGE 14 ---
+          "dischargeTeam": "string",
+          "_id": "string",
+          "createDate": "2019-08-24T14:15:22Z"
+        }
+      ]
+    }
+  ],
+  "count": 0
+}
+4.2MDMInformation
+MDMandFieldInformation
+MDMName：
+MDM_HPI_cpi_case
+MDMFields:44
+45
+46
+47
+48
+49
+50
+51
+52
+--- PAGE 15 ---
+MDMBuildingProcess
+--- PAGE 16 ---
+

@@ -506,7 +506,7 @@ def spec_patient_by_hkid(
     cur = list(
         coll.find(q, {"resource": 1, "app": 1}).sort("resource.meta.lastUpdated", -1).skip((page - 1) * limit).limit(limit)
     )
-    data = [build_patient_payload(doc.get("resource", {}), doc.get("app", {})) for doc in cur]
+    data = [build_patient_payload(doc.get("resource", {}), doc.get("app", {}), doc.get("_id")) for doc in cur]
     return {"data": data, "count": total}
 
 @app.get("/api/v1/pmi_case/_by-hkid/", tags=["Application API"], summary="[SPEC] Get PMI cases by HKID (GET)")
@@ -566,9 +566,11 @@ def spec_pmi_cases_by_hkid(
         patient_resource = patient_map.get(pid) if pid else None
         if patient_resource:
             patient_payload = build_patient_payload(
-                patient_resource.get("resource", {}), patient_resource.get("app", {})
+                patient_resource.get("resource", {}),
+                patient_resource.get("app", {}),
+                patient_resource.get("_id"),
             )
-        encounter_payload = build_encounter_payload(doc.get("resource", {}), doc.get("app", {}), None)
+        encounter_payload = build_encounter_payload(doc.get("resource", {}), doc.get("app", {}), doc.get("_id"), None)
         if patient_payload:
             encounter_payload["patient"] = patient_payload
         data.append(encounter_payload)
@@ -626,11 +628,15 @@ def spec_cpi_cases_by_team(
         patient_resource = patient_map.get(pid) if pid else None
         if patient_resource:
             patient_payload = build_patient_payload(
-                patient_resource.get("resource", {}), patient_resource.get("app", {})
+                patient_resource.get("resource", {}),
+                patient_resource.get("app", {}),
+                patient_resource.get("_id"),
             )
         payload = build_cpi_payload(
             doc.get("resource", {}),
             doc.get("app", {}),
+            doc.get("_id"),
+            None,
             patient_payload,
         )
         data.append(payload)
@@ -691,11 +697,15 @@ def spec_cpi_cases_by_mo(
         patient_resource = patient_map.get(pid) if pid else None
         if patient_resource:
             patient_payload = build_patient_payload(
-                patient_resource.get("resource", {}), patient_resource.get("app", {})
+                patient_resource.get("resource", {}),
+                patient_resource.get("app", {}),
+                patient_resource.get("_id"),
             )
         payload = build_cpi_payload(
             doc.get("resource", {}),
             doc.get("app", {}),
+            doc.get("_id"),
+            None,
             patient_payload,
         )
         data.append(payload)

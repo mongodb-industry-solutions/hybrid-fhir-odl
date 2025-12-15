@@ -40,6 +40,7 @@ def generate_patients(n: int = 50) -> List[Tuple[Dict[str, Any], Dict[str, Any]]
         cc_codes = _cccodes_from_name(f"{first}{last}")
         now_iso = datetime.utcnow().isoformat()
 
+        death_flag = random.random() < 0.05
         resource: Dict[str, Any] = {
             "resourceType": "Patient",
             "identifier": [
@@ -82,8 +83,10 @@ def generate_patients(n: int = 50) -> List[Tuple[Dict[str, Any], Dict[str, Any]]
                     {"url": "http://example.org/hk/StructureDefinition/ccCodes", "valueInteger": c}
                     for c in cc_codes
                 ]
-            ]
+            ],
+            **({"deceasedBoolean": True, "deceasedDateTime": fake.date_time_between(start_date="-2y", end_date="-1y").isoformat()} if death_flag else {}),
         }
+        hospital_data = [{"mrn": mrn, "hospCode": hosp}]
         app = {
             "documentType": random.choice(["PASS", "ID"]),
             "documentCode": fake.bothify(text="??######"),
@@ -93,6 +96,12 @@ def generate_patients(n: int = 50) -> List[Tuple[Dict[str, Any], Dict[str, Any]]
             "exactDobFlag": random.choice([True, False]),
             "lastPayCode": _random_last_pay_code(),
             "ccCodes": cc_codes,
+            "dobStr": resource["birthDate"],
+            "patientName": resource["name"][0]["text"],
+            "accessCode": random.randint(100000, 999999),
+            "deathIndicator": "Y" if death_flag else "N",
+            "hospitalData": hospital_data,
+            "lastUpdateDatetime": now_iso,
         }
         out.append((resource, app))
     return out
