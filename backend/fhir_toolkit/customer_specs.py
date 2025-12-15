@@ -62,7 +62,7 @@ def build_patient_payload(
     app: Dict[str, Any],
     doc_id: Optional[Any] = None,
 ) -> Dict[str, Any]:
-    """Assemble the PATIENT_BY_HKID response body."""
+    """Assemble the PATIENT response body for local ID or HKID lookup."""
 
     address = (resource.get("address") or [{}])[0]
     medical_rec_nums = [
@@ -89,7 +89,8 @@ def build_patient_payload(
         "sex": resource.get("gender"),
         "name": _first_text(resource.get("name") or []),
         "chiName": _first_text(resource.get("name") or [], language="zh"),
-        "hkid": _get_identifier(resource, "hkid"),
+        "localId": _get_identifier(resource, "local_id") or _get_identifier(resource, "hkid"),
+        "hkid": _get_identifier(resource, "hkid"),  # Keep for backward compatibility
         "medicalRecNum": medical_rec_nums,
         "hospitalData": app.get("hospitalData") or hospital_data,
         "homePhone": _phone(resource, "home"),

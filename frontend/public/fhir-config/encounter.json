@@ -12,7 +12,14 @@
       }
     },
     {
-      "label": "By patient HKID + doctor code",
+      "label": "By patient Local ID + doctor code",
+      "params": {
+        "subject.identifier": "local_id|A123456(7)",
+        "participant.identifier": "DRY"
+      }
+    },
+    {
+      "label": "By patient HKID + doctor code (deprecated)",
       "params": {
         "subject.identifier": "hkid|A123456(7)",
         "participant.identifier": "DRY"

@@ -1,11 +1,11 @@
 --- PAGE 1 ---
 APIandMDMBuilding
-1.PATIENT_BY_HKID
+1.PATIENT_BY_LOCAL_ID (legacy: PATIENT_BY_HKID)
 1.1APIDetails
 AccessPath
 RequestMethod AccessPath
-POST http://dmpcdcvmctst71b:3080/api/v1/patient/_by-hkid/find
-GET http://dmpcdcvmctst71b:3080/api/v1/patient/_by-hkid/
+POST http://dmpcdcvmctst71b:3080/api/v1/patient/_by-local-id/find
+GET http://dmpcdcvmctst71b:3080/api/v1/patient/_by-local-id/
 ParameterList
 ParameterNameType Defaults Constraint Description
 page number 1 NotRequiredPaginationNumber

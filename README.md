@@ -148,7 +148,7 @@ hybrid-odl/
    - Data cleanup
 
 2. **Application API** - Custom business logic
-   - Legacy Hong Kong healthcare endpoints
+   - Regional healthcare endpoints (Hong Kong legacy support)
    - Data inspection and discovery tools
    - PMI (Patient Management Information) case queries
    - CPI (Clinical Process Improvement) queries
@@ -164,7 +164,7 @@ hybrid-odl/
 #### 1. Resource Browser Tab
 - View all FHIR resources from MongoDB
 - Filter by resource type (Patient, Encounter, Practitioner, CareTeam)
-- Search by HKID, case number, codes
+- Search by Local ID, HKID (legacy), case number, codes
 - Click to view full resource details
 - Side-by-side JSON view with both FHIR resource and envelope data
 
@@ -237,7 +237,9 @@ curl -H "x-search-mode: accelerated" \
      "http://localhost:8000/fhir/Patient?gender=female&limit=10"
 
 # Find encounters for a specific patient (cross-resource)
-curl "http://localhost:8000/fhir/Encounter?subject.identifier=hkid|A224515(2)&limit=10"
+curl "http://localhost:8000/fhir/Encounter?subject.identifier=local_id|A224515(2)&limit=10"
+# Legacy HKID also supported:
+# curl "http://localhost:8000/fhir/Encounter?subject.identifier=hkid|A224515(2)&limit=10"
 
 # Complex query: Recent encounters for a doctor at specific hospital
 curl "http://localhost:8000/fhir/Encounter?participant.identifier=D-1310&service-provider=QH&date-start=ge2025-09-01&limit=10"
@@ -302,9 +304,10 @@ This hybrid approach provides:
 - **Combined queries**: Multiple parameters
 - **Cross-resource**: Relationship-based queries
 
-### Hong Kong Healthcare Support
+### Regional Healthcare Support
 
-- HKID (Hong Kong ID) search
+- Local ID search (primary)
+- HKID (Hong Kong ID) search (legacy)
 - Hospital-specific MRN (Medical Record Numbers)
 - PMI case management
 - CPI (Clinical Process Improvement) workflows

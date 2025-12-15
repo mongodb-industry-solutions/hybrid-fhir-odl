@@ -18,7 +18,7 @@ STATUSES = ["planned","in-progress","onhold","finished","cancelled"]
 PAY_CODES = ["GOV", "SELF", "PRIV"]
 PATIENT_GROUPS = ["G1", "G2", "VIP"]
 
-def _hkid() -> str:
+def _local_id() -> str:
     letters = "ABCDEFGHJKLMNPQRSTUVWXYZ"
     a = random.choice(letters)
     digits = "".join([str(random.randint(0,9)) for _ in range(6)])
@@ -34,7 +34,7 @@ def generate_patients(n: int = 50) -> List[Tuple[Dict[str, Any], Dict[str, Any]]
     for _ in range(n):
         first = fake.first_name()
         last = fake.last_name()
-        hkid = _hkid()
+        local_id = _local_id()
         hosp = random.choice(HOSPITALS)["code"]
         mrn = str(random.randint(100000, 999999))
         cc_codes = _cccodes_from_name(f"{first}{last}")
@@ -44,7 +44,7 @@ def generate_patients(n: int = 50) -> List[Tuple[Dict[str, Any], Dict[str, Any]]
         resource: Dict[str, Any] = {
             "resourceType": "Patient",
             "identifier": [
-                {"system": "hkid", "value": hkid},
+                {"system": "local_id", "value": local_id},
                 {"system": f"mrn:{hosp}", "value": mrn},
                 {"system": "doc:other", "value": fake.bothify(text="??####")}
             ],
@@ -61,7 +61,7 @@ def generate_patients(n: int = 50) -> List[Tuple[Dict[str, Any], Dict[str, Any]]
                     "city": fake.city(),
                     "district": fake.state_abbr(),
                     "postalCode": fake.postcode(),
-                    "country": "HK",
+                    "country": "LR",
                     "text": fake.address().replace("\n", " " )
                 },
                 {
@@ -80,7 +80,7 @@ def generate_patients(n: int = 50) -> List[Tuple[Dict[str, Any], Dict[str, Any]]
             "meta": {"lastUpdated": now_iso},
             "extension": [
                 *[
-                    {"url": "http://example.org/hk/StructureDefinition/ccCodes", "valueInteger": c}
+                    {"url": "http://example.org/local/StructureDefinition/ccCodes", "valueInteger": c}
                     for c in cc_codes
                 ]
             ],
@@ -137,7 +137,7 @@ def generate_encounters_for_patients(patients: List[Dict[str, Any]], practitione
     out: List[Tuple[Dict[str, Any], Dict[str, Any]]] = []
 
     for pat in patients:
-        hkid = next((idf.get("value") for idf in pat.get("identifier", []) if idf.get("system")=="hkid"), None)
+        local_id = next((idf.get("value") for idf in pat.get("identifier", []) if idf.get("system")=="local_id"), None)
         pid = pat.get("id", None) or fake.uuid4()
         hosp = random.choice(HOSPITALS)["code"]
         for _ in range(per_patient):
@@ -177,10 +177,10 @@ def generate_encounters_for_patients(patients: List[Dict[str, Any]], practitione
                 "identifier": [{"system": "caseNum", "value": case_num}],
                 "status": status,
                 "class": {"code": "IMP" if case_type == "I" else ("AMB" if case_type == "A" else "EMER")},
-                "serviceType": {"coding": [{"system": "http://example.org/hk/serviceType", "code": spec}]},
+                "serviceType": {"coding": [{"system": "http://example.org/local/serviceType", "code": spec}]},
                 "subject": {
                     "reference": f"Patient/{pid}",
-                    **({"identifier": {"system": "hkid", "value": hkid}} if hkid else {})
+                    **({"identifier": {"system": "local_id", "value": local_id}} if local_id else {})
                 },
                 "period": {"start": start.isoformat(), "end": end.isoformat()},
                 "serviceProvider": {"reference": f"Organization/{hosp}"},
@@ -192,14 +192,14 @@ def generate_encounters_for_patients(patients: List[Dict[str, Any]], practitione
                     },
                     "dischargeDisposition": {
                         "coding": [
-                            {"system": "http://example.org/hk/discharge", "code": discharge_code}
+                            {"system": "http://example.org/local/discharge", "code": discharge_code}
                         ]
                     }
                 },
                 "participant": participants,
                 "careTeam": [{"reference": f"CareTeam/{team['identifier'][0]['value']}"}],
                 "location": [{"location": {"reference": f"Location/{ward}"}}],
-                "type": [{"coding":[{"system":"http://example.org/hk/specCode","code": spec}]}]
+                "type": [{"coding":[{"system":"http://example.org/local/specCode","code": spec}]}]
             }
 
             app = {

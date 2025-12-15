@@ -10,7 +10,8 @@ class SearchFieldConfig(TypedDict):
 # the value can be read directly from the canonical FHIR structure ("fhir") or
 # represents a custom/customer-only attribute ("custom").
 SEARCH_FIELDS: Dict[str, SearchFieldConfig] = {
-    "hkid": {"path": "Patient.identifier(hkid)", "category": "custom"},
+    "local_id": {"path": "Patient.identifier(local_id)", "category": "custom"},
+    "hkid": {"path": "Patient.identifier(local_id)", "category": "custom"},  # Backward compatibility
     "name": {"path": "Patient.name[0].text", "category": "fhir"},
     "family": {"path": "Patient.name[0].family", "category": "fhir"},
     "given": {"path": "Patient.name[0].given[0]", "category": "fhir"},

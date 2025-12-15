@@ -52,7 +52,7 @@ def _parse_bool(val: Any) -> Optional[bool]:
 def build_patient_filter(params: Dict[str, Any], accelerated: bool = True) -> Dict[str, Any]:
     """
     Support common Patient params:
-      - identifier (token) e.g. hkid|A123456(7) or mrn:QH|12345
+      - identifier (token) e.g. local_id|A123456(7) or hkid|A123456(7) or mrn:QH|12345
       - gender, birthdate (prefixes), name (contains), address-city, address-district
       - general-practitioner, organization (references)
       - telecom (contains)
@@ -69,6 +69,9 @@ def build_patient_filter(params: Dict[str, Any], accelerated: bool = True) -> Di
         if "|" not in ident:
             continue
         system, value = ident.split("|", 1)
+        if accelerated and "local_id" in enabled and (system == "local_id" or system == "hkid"):
+            add({"search.local_id": value})
+        # Backward compatibility: support hkid queries
         if accelerated and "hkid" in enabled and system == "hkid":
             add({"search.hkid": value})
         elif accelerated and "mrns" in enabled and system.startswith("mrn:"):
@@ -179,7 +182,7 @@ def build_patient_filter(params: Dict[str, Any], accelerated: bool = True) -> Di
 def build_encounter_filter(params: Dict[str, Any], accelerated: bool = True) -> Dict[str, Any]:
     """
     Support Encounter params:
-      - subject.identifier (token) -> HKID
+      - subject.identifier (token) -> Local ID
       - participant.identifier (token) -> doctorCode
       - class, status
       - date-start (ge/le etc), end-date
@@ -203,11 +206,14 @@ def build_encounter_filter(params: Dict[str, Any], accelerated: bool = True) -> 
         else:
             add({"resource.identifier": {"$elemMatch": {"system": system, "value": value}}})
 
-    # Patient HKID via subject.identifier
+    # Patient Local ID via subject.identifier
     for subj_ident in _ensure_list(params.get("subject.identifier")):
         if "|" not in subj_ident:
             continue
         system, value = subj_ident.split("|", 1)
+        if accelerated and (system == "local_id" or system == "hkid") and "local_id" in enabled:
+            add({"search.local_id": value})
+        # Backward compatibility: support hkid queries
         if accelerated and system == "hkid" and "hkid" in enabled:
             add({"search.hkid": value})
         else:
