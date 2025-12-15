@@ -221,3 +221,12 @@ __marimo__/
 # SECURITY README
 #  Ignore files that may contain sensitive information such as credentials, tokens, or keys.
 SECURITY_CHECK_README.md
+security_check.sh
+
+
+# Project-specific generated artifacts
+# spec.txt
+# docs/spec_field_mapping.csv
+# frontend/public/spec_field_mapping.csv
+# frontend/public/fhir-config/field-mapping.json
+# frontend/public/docs/

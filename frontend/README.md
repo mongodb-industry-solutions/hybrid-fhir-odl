@@ -78,14 +78,14 @@ frontend/
 ### Resource Browser
 - Browse all FHIR resources in MongoDB
 - Filter by resource type
-- Search by HKID, case number, codes
+- Search by Local ID, HKID (legacy), case number, codes
 - View resource details with JSON formatting
 - Side-by-side view of FHIR resource and envelope data
 
 ### Synthetic Data Generator
 - Generate synthetic patients, encounters, practitioners, care teams
 - Configurable quantities
-- Realistic Hong Kong healthcare data
+- Realistic regional healthcare data (Hong Kong examples)
 - Wipe all data with confirmation
 
 ### API Tester

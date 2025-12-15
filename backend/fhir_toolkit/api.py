@@ -27,7 +27,7 @@ tags_metadata = [
     },
     {
         "name": "Application API",
-        "description": "Custom business logic endpoints including legacy healthcare APIs, data inspection, and discovery tools. Supports Hong Kong healthcare conventions (HKID, PMI cases).",
+        "description": "Custom business logic endpoints including legacy healthcare APIs, data inspection, and discovery tools. Supports local region healthcare conventions (Local ID, PMI cases).",
     },
     {
         "name": "FHIR API",
@@ -163,12 +163,29 @@ def distinct_resource_types():
     types = coll.distinct("resourceType", {"tenant": settings.tenant})
     return {"resourceTypes": sorted([t for t in types if t])}
 
-@app.get("/inspect/sample-hkid", tags=["Application API"], summary="Get sample HKID")
+@app.get("/inspect/sample-local-id", tags=["Application API"], summary="Get sample Local ID")
+def sample_local_id():
+    """
+    Retrieve a sample Local ID from existing patient data.
+
+    Useful for testing and discovering valid Local ID values in the system.
+    """
+    coll = get_collection()
+    doc = coll.find_one({"tenant": settings.tenant, "resourceType":"Patient", "search.local_id": {"$exists": True}}, {"search.local_id":1})
+    if not doc:
+        # Fallback to hkid for backward compatibility
+        doc = coll.find_one({"tenant": settings.tenant, "resourceType":"Patient", "search.hkid": {"$exists": True}}, {"search.hkid":1})
+        return {"local_id": (doc or {}).get("search",{}).get("hkid")}
+    return {"local_id": (doc or {}).get("search",{}).get("local_id")}
+
+# Backward compatibility endpoint
+@app.get("/inspect/sample-hkid", tags=["Application API"], summary="Get sample HKID (deprecated - use sample-local-id)")
 def sample_hkid():
     """
-    Retrieve a sample Hong Kong ID (HKID) from existing patient data.
-
-    Useful for testing and discovering valid HKID values in the system.
+    Retrieve a sample HKID from existing patient data.
+    
+    DEPRECATED: Use /inspect/sample-local-id instead.
+    Useful for testing and discovering valid ID values in the system.
     """
     coll = get_collection()
     doc = coll.find_one({"tenant": settings.tenant, "resourceType":"Patient", "search.hkid": {"$exists": True}}, {"search.hkid":1})
@@ -186,7 +203,7 @@ def list_resources(
 
     Supports filtering by:
     - Resource type (Patient, Encounter, etc.)
-    - Query string (searches HKID, case number, doctor code, team code, hospital code, resource ID)
+    - Query string (searches Local ID, case number, doctor code, team code, hospital code, resource ID)
 
     Returns paginated results with full resource, app, and search data.
     """
@@ -196,7 +213,8 @@ def list_resources(
         match["resourceType"] = resourceType
     if q:
         match["$or"] = [
-            {"search.hkid": q},
+            {"search.local_id": q},
+            {"search.hkid": q},  # Backward compatibility
             {"search.caseNum": q},
             {"search.doctorCode": q},
             {"search.teamCode": q},
@@ -237,7 +255,10 @@ def get_sample_values(rtype: str, limit: int = 5):
     result = {}
 
     if rtype == "Patient":
-        # Get sample HKIDs
+        # Get sample Local IDs
+        local_ids = coll.distinct("search.local_id", {"tenant": settings.tenant, "resourceType": "Patient", "search.local_id": {"$exists": True}})
+        result["local_ids"] = local_ids[:limit]
+        # Keep hkids for backward compatibility
         hkids = coll.distinct("search.hkid", {"tenant": settings.tenant, "resourceType": "Patient", "search.hkid": {"$exists": True}})
         result["hkids"] = hkids[:limit]
 
@@ -384,11 +405,32 @@ def patient_summary(value: str, by: str = Query("id", description="Use 'id' or '
         "limits": {"encounterLimit": encounter_limit}
     }
 
-@app.get("/patients/by-hkid", tags=["Application API"], summary="Find patients by HKID")
+@app.get("/patients/by-local-id", tags=["Application API"], summary="Find patients by Local ID")
+def patient_by_local_id(local_id: str, hospCode: Optional[str] = None, limit: int = 20, page: int = 1):
+    """
+    Find patient records by Local ID.
+
+    Optionally filter by hospital code. Returns resource and app data for each match.
+    Results are sorted by last updated timestamp.
+    """
+    # Try local_id field first, fallback to hkid for backward compatibility
+    q = {"tenant": settings.tenant, "resourceType": "Patient", "$or": [
+        {"search.local_id": local_id},
+        {"search.hkid": local_id}
+    ]}
+    if hospCode:
+        q["search.mrns.hospCode"] = hospCode
+    coll = get_collection()
+    cur = coll.find(q, {"resource":1, "app":1}).sort("resource.meta.lastUpdated", -1).skip((page-1)*limit).limit(limit)
+    return [ {"resource": d["resource"], "app": d.get("app",{})} for d in cur ]
+
+# Keep existing endpoint for backward compatibility
+@app.get("/patients/by-hkid", tags=["Application API"], summary="Find patients by HKID (deprecated - use by-local-id)")
 def patient_by_hkid(hkid: str, hospCode: Optional[str] = None, limit: int = 20, page: int = 1):
     """
-    Find patient records by Hong Kong ID (HKID).
-
+    Find patient records by HKID.
+    
+    DEPRECATED: Use /patients/by-local-id instead.
     Optionally filter by hospital code. Returns resource and app data for each match.
     Results are sorted by last updated timestamp.
     """
@@ -399,11 +441,35 @@ def patient_by_hkid(hkid: str, hospCode: Optional[str] = None, limit: int = 20, 
     cur = coll.find(q, {"resource":1, "app":1}).sort("resource.meta.lastUpdated", -1).skip((page-1)*limit).limit(limit)
     return [ {"resource": d["resource"], "app": d.get("app",{})} for d in cur ]
 
-@app.get("/pmicases/by-hkid", tags=["Application API"], summary="Get PMI cases by HKID")
+@app.get("/pmicases/by-local-id", tags=["Application API"], summary="Get PMI cases by Local ID")
+def pmi_cases_by_local_id(local_id: str, hospCode: Optional[str]=None, limit: int = 50, page: int = 1):
+    """
+    Retrieve Patient Management Information (PMI) cases by Local ID.
+
+    Finds all encounters (hospital visits) associated with a patient's Local ID.
+    Optionally filter by hospital code. Returns sorted by encounter start date.
+    """
+    coll = get_collection()
+    # Try local_id field first, fallback to hkid for backward compatibility
+    pat = coll.find_one({"tenant": settings.tenant, "resourceType":"Patient", "$or": [
+        {"search.local_id": local_id},
+        {"search.hkid": local_id}
+    ]}, {"search.patientKey":1})
+    if not pat:
+        return []
+    q = {"tenant": settings.tenant, "resourceType":"Encounter", "search.patientKey": pat["search"]["patientKey"]}
+    if hospCode:
+        q["search.hospCode"] = hospCode
+    cur = coll.find(q, {"resource":1, "app":1}).sort("search.start", -1).skip((page-1)*limit).limit(limit)
+    return [ {"resource": d["resource"], "app": d.get("app",{})} for d in cur ]
+
+# Keep existing endpoint for backward compatibility
+@app.get("/pmicases/by-hkid", tags=["Application API"], summary="Get PMI cases by HKID (deprecated - use by-local-id)")
 def pmi_cases_by_hkid(hkid: str, hospCode: Optional[str]=None, limit: int = 50, page: int = 1):
     """
     Retrieve Patient Management Information (PMI) cases by HKID.
-
+    
+    DEPRECATED: Use /pmicases/by-local-id instead.
     Finds all encounters (hospital visits) associated with a patient's HKID.
     Optionally filter by hospital code. Returns sorted by encounter start date.
     """
@@ -493,7 +559,7 @@ def spec_patient_by_hkid(
     Supports both GET and POST methods as per customer specification.
     Returns data in format: {"data": [...], "count": N}
 
-    Parameters match MDM_HKPMI_patient_api specification.
+    Parameters match MDM_PMI_patient_api specification (legacy: MDM_HKPMI_patient_api).
     """
     q = {"tenant": settings.tenant, "resourceType": "Patient"}
     if hkid:
@@ -506,7 +572,7 @@ def spec_patient_by_hkid(
     cur = list(
         coll.find(q, {"resource": 1, "app": 1}).sort("resource.meta.lastUpdated", -1).skip((page - 1) * limit).limit(limit)
     )
-    data = [build_patient_payload(doc.get("resource", {}), doc.get("app", {})) for doc in cur]
+    data = [build_patient_payload(doc.get("resource", {}), doc.get("app", {}), doc.get("_id")) for doc in cur]
     return {"data": data, "count": total}
 
 @app.get("/api/v1/pmi_case/_by-hkid/", tags=["Application API"], summary="[SPEC] Get PMI cases by HKID (GET)")
@@ -524,7 +590,7 @@ def spec_pmi_cases_by_hkid(
     Supports both GET and POST methods as per customer specification.
     Returns data in format: {"data": [...], "count": N}
 
-    Parameters match MDM_HKPMI_pmi_case specification.
+    Parameters match MDM_PMI_pmi_case specification (legacy: MDM_HKPMI_pmi_case).
     """
     coll = get_collection()
 
@@ -566,9 +632,11 @@ def spec_pmi_cases_by_hkid(
         patient_resource = patient_map.get(pid) if pid else None
         if patient_resource:
             patient_payload = build_patient_payload(
-                patient_resource.get("resource", {}), patient_resource.get("app", {})
+                patient_resource.get("resource", {}),
+                patient_resource.get("app", {}),
+                patient_resource.get("_id"),
             )
-        encounter_payload = build_encounter_payload(doc.get("resource", {}), doc.get("app", {}), None)
+        encounter_payload = build_encounter_payload(doc.get("resource", {}), doc.get("app", {}), doc.get("_id"), None)
         if patient_payload:
             encounter_payload["patient"] = patient_payload
         data.append(encounter_payload)
@@ -626,11 +694,15 @@ def spec_cpi_cases_by_team(
         patient_resource = patient_map.get(pid) if pid else None
         if patient_resource:
             patient_payload = build_patient_payload(
-                patient_resource.get("resource", {}), patient_resource.get("app", {})
+                patient_resource.get("resource", {}),
+                patient_resource.get("app", {}),
+                patient_resource.get("_id"),
             )
         payload = build_cpi_payload(
             doc.get("resource", {}),
             doc.get("app", {}),
+            doc.get("_id"),
+            None,
             patient_payload,
         )
         data.append(payload)
@@ -654,7 +726,7 @@ def spec_cpi_cases_by_mo(
     Supports both GET and POST methods as per customer specification.
     Returns data in format: {"data": [...], "count": N}
 
-    Parameters match MDM_HPI_cpi_case specification.
+    Parameters match MDM_PI_cpi_case specification (legacy: MDM_HPI_cpi_case).
     Default statusCode is "AC" as per spec.
     Default caseType is ["I","A"] if not specified.
     """
@@ -691,11 +763,15 @@ def spec_cpi_cases_by_mo(
         patient_resource = patient_map.get(pid) if pid else None
         if patient_resource:
             patient_payload = build_patient_payload(
-                patient_resource.get("resource", {}), patient_resource.get("app", {})
+                patient_resource.get("resource", {}),
+                patient_resource.get("app", {}),
+                patient_resource.get("_id"),
             )
         payload = build_cpi_payload(
             doc.get("resource", {}),
             doc.get("app", {}),
+            doc.get("_id"),
+            None,
             patient_payload,
         )
         data.append(payload)
