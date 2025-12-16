@@ -413,8 +413,6 @@ def patient_by_local_id(local_id: str, hospCode: Optional[str] = None, limit: in
     Optionally filter by hospital code. Returns resource and app data for each match.
     Results are sorted by last updated timestamp.
     """
-    # Include console log for debugging
-    print(f"Searching patients by local_id: {local_id}")
 
     # Try local_id field first, fallback to hkid for backward compatibility
     q = {"tenant": settings.tenant, "resourceType": "Patient", "$or": [
