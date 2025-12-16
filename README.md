@@ -1,6 +1,6 @@
-# FHIR Hybrid Data Management Platform
+# FHIR Hybrid Data Manager Reference Pattern
 
-A comprehensive FHIR R4 compliant healthcare data management system with MongoDB backend, featuring advanced search capabilities and an interactive API demonstrator.
+A comprehensive FHIR first healthcare data management system with MongoDB backend, featuring advanced search capabilities and an interactive API demonstrator. This reference pattern demonstrates a FHIR aware system architecture optimized for real-world healthcare data scenarios.
 
 ## 🚀 Quick Start - Ready to Run!
 
@@ -153,7 +153,7 @@ hybrid-odl/
    - PMI (Patient Management Information) case queries
    - CPI (Clinical Process Improvement) queries
 
-3. **FHIR R4 API** - Standards-compliant healthcare interoperability
+3. **FHIR R4 API** - FHIR aware healthcare interoperability
    - Patient search (20+ parameters)
    - Encounter search (15+ parameters)
    - Accelerated and canonical search modes
@@ -183,7 +183,7 @@ hybrid-odl/
 - **Cross-resource demonstrations** - Patient-Encounter relationships
 - **Visual categorization** - Basic, Complex, Cross-resource
 - **Auto-discovery** - Populates examples from your database
-- **Dual search modes** - Accelerated (fast) vs Canonical (spec-compliant)
+- **Dual search modes** - Accelerated (fast) vs Canonical (FHIR aware)
 - **Debug mode** - View MongoDB filters
 
 ## 🎯 Getting Started - First Use
@@ -267,8 +267,8 @@ NEXT_PUBLIC_ENABLE_FHIR=true
 
 **Canonical Mode**:
 - Uses standard FHIR `resource.*` fields
-- Slower but spec-compliant
-- Best for standards validation
+- Slower but FHIR first approach
+- Best for FHIR standards validation
 
 ## 🏥 Healthcare Data Model
 
@@ -287,7 +287,7 @@ Resources are stored with three sections:
 ```
 
 This hybrid approach provides:
-- ✅ FHIR R4 compliance
+- ✅ FHIR first data model
 - ✅ Fast search performance
 - ✅ Custom business logic support
 - ✅ Multi-tenancy
@@ -446,7 +446,7 @@ After following the quick start, you should have:
 
 ## 🤝 Contributing
 
-This is a demonstration/reference implementation showing:
+This is a demonstration reference pattern showing:
 - FHIR R4 API design patterns
 - MongoDB document design for healthcare
 - Fast search with pre-computed indexes
