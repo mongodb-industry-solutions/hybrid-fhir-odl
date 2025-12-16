@@ -222,6 +222,7 @@ __marimo__/
 #  Ignore files that may contain sensitive information such as credentials, tokens, or keys.
 SECURITY_CHECK_README.md
 security_check.sh
+tmp.txt
 
 
 # Project-specific generated artifacts
