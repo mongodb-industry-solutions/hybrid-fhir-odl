@@ -16,15 +16,15 @@ COPY backend/ .
 RUN pip install --no-cache-dir -e .
 
 # Expose the port
-EXPOSE 3100
+EXPOSE 8080
 
 # Set environment variables
 ENV PYTHONPATH=/app
-ENV PORT=3100
+ENV PORT=8080
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:3100/health || exit 1
+# HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+#     CMD curl -f http://localhost:8080/health || exit 1
 
 # Run the FastAPI application with uvicorn
-CMD ["python", "-m", "uvicorn", "fhir_toolkit.api:app", "--host", "0.0.0.0", "--port", "3100", "--reload"]
+CMD ["python", "-m", "uvicorn", "fhir_toolkit.api:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]

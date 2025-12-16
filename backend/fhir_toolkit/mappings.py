@@ -74,8 +74,7 @@ def compute_search(resource: Dict[str, Any], app: Optional[Dict[str, Any]] = Non
         _put("patientKey", resource.get("id"))
         # Identifiers & demographics
         _put("local_id", _get_identifier(resource, LOCAL_ID_SYSTEM, exact=True))
-        # Keep hkid for customer API backward compatibility
-        _put("hkid", _get_identifier(resource, LOCAL_ID_SYSTEM, exact=True))
+        # hkid removed - use local_id instead
         _put("gender", resource.get("gender"))
         _put("dob", resource.get("birthDate"))
         # Names
@@ -129,8 +128,7 @@ def compute_search(resource: Dict[str, Any], app: Optional[Dict[str, Any]] = Non
             idf = subj["identifier"]
             if isinstance(idf, dict) and idf.get("system") == LOCAL_ID_SYSTEM:
                 s["local_id"] = idf.get("value")
-                # Keep hkid for customer API backward compatibility
-                s["hkid"] = idf.get("value")
+                # hkid removed - use local_id instead
         # Extract Patient/{id} -> patientKey
         ref = subj.get("reference") or ""
         if ref.startswith("Patient/"):

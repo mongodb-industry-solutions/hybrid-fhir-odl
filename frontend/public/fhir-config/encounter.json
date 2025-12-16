@@ -18,13 +18,7 @@
         "participant.identifier": "DRY"
       }
     },
-    {
-      "label": "By patient HKID + doctor code (deprecated)",
-      "params": {
-        "subject.identifier": "hkid|A123456(7)",
-        "participant.identifier": "DRY"
-      }
-    },
+
     {
       "label": "ED SNOMED reason + location ED01 last7d",
       "params": {

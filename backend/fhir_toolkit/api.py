@@ -69,6 +69,10 @@ def _as_list(value: Any) -> List[str]:
 
 # ========== ADMIN API ==========
 
+@app.get("/")
+async def read_root(request: Request):
+    return {"message": "Server is running"}
+
 @app.get("/health", tags=["Admin API"], summary="Health check")
 def health():
     """
@@ -172,24 +176,9 @@ def sample_local_id():
     """
     coll = get_collection()
     doc = coll.find_one({"tenant": settings.tenant, "resourceType":"Patient", "search.local_id": {"$exists": True}}, {"search.local_id":1})
-    if not doc:
-        # Fallback to hkid for backward compatibility
-        doc = coll.find_one({"tenant": settings.tenant, "resourceType":"Patient", "search.hkid": {"$exists": True}}, {"search.hkid":1})
-        return {"local_id": (doc or {}).get("search",{}).get("hkid")}
+    return {"local_id": None}
     return {"local_id": (doc or {}).get("search",{}).get("local_id")}
 
-# Backward compatibility endpoint
-@app.get("/inspect/sample-hkid", tags=["Application API"], summary="Get sample HKID (deprecated - use sample-local-id)")
-def sample_hkid():
-    """
-    Retrieve a sample HKID from existing patient data.
-    
-    DEPRECATED: Use /inspect/sample-local-id instead.
-    Useful for testing and discovering valid ID values in the system.
-    """
-    coll = get_collection()
-    doc = coll.find_one({"tenant": settings.tenant, "resourceType":"Patient", "search.hkid": {"$exists": True}}, {"search.hkid":1})
-    return {"hkid": (doc or {}).get("search",{}).get("hkid")}
 
 @app.get("/inspect/resources", tags=["Application API"], summary="Search and list resources")
 def list_resources(
@@ -214,7 +203,6 @@ def list_resources(
     if q:
         match["$or"] = [
             {"search.local_id": q},
-            {"search.hkid": q},  # Backward compatibility
             {"search.caseNum": q},
             {"search.doctorCode": q},
             {"search.teamCode": q},
@@ -258,9 +246,7 @@ def get_sample_values(rtype: str, limit: int = 5):
         # Get sample Local IDs
         local_ids = coll.distinct("search.local_id", {"tenant": settings.tenant, "resourceType": "Patient", "search.local_id": {"$exists": True}})
         result["local_ids"] = local_ids[:limit]
-        # Keep hkids for backward compatibility
-        hkids = coll.distinct("search.hkid", {"tenant": settings.tenant, "resourceType": "Patient", "search.hkid": {"$exists": True}})
-        result["hkids"] = hkids[:limit]
+        # hkids removed - use local_ids instead
 
         # Get sample genders
         genders = coll.distinct("resource.gender", {"tenant": settings.tenant, "resourceType": "Patient"})
@@ -320,29 +306,26 @@ def get_sample_values(rtype: str, limit: int = 5):
     return result
 
 @app.get("/inspect/patient-summary/{value}", tags=["Application API"], summary="Cross-resource patient graph")
-def patient_summary(value: str, by: str = Query("id", description="Use 'id' or 'hkid' for lookup"), encounter_limit: int = 5):
+def patient_summary(value: str, by: str = Query("id", description="Use 'id' for lookup"), encounter_limit: int = 5):
     """
     Return a compact cross-resource view of a patient, their encounters, and the practitioners/care teams involved.
 
     Demonstrates how the four stored resource types can be joined without leaving MongoDB.
     """
     by_key = (by or "id").lower()
-    if by_key not in ("id", "hkid"):
-        raise HTTPException(status_code=400, detail="Parameter 'by' must be 'id' or 'hkid'")
+    if by_key != "id":
+        raise HTTPException(status_code=400, detail="Parameter 'by' must be 'id'")
 
     coll = get_collection()
     patient_query = {"tenant": settings.tenant, "resourceType": "Patient"}
-    patient_query["resource.id" if by_key == "id" else "search.hkid"] = value
+    patient_query["resource.id"] = value
     patient_doc = coll.find_one(patient_query, {"resource": 1, "app": 1, "search": 1})
     if not patient_doc:
         raise HTTPException(status_code=404, detail="Patient not found")
 
     patient_key = patient_doc.get("search", {}).get("patientKey") or patient_doc["resource"].get("id")
     encounter_query = {"tenant": settings.tenant, "resourceType": "Encounter"}
-    if patient_key:
-        encounter_query["search.patientKey"] = patient_key
-    else:
-        encounter_query["search.hkid"] = patient_doc.get("search", {}).get("hkid")
+    encounter_query["search.patientKey"] = patient_key
 
     enc_cursor = coll.find(encounter_query, {"resource": 1, "search": 1}).sort("search.start", -1).limit(encounter_limit)
     encounters = []
@@ -413,28 +396,9 @@ def patient_by_local_id(local_id: str, hospCode: Optional[str] = None, limit: in
     Optionally filter by hospital code. Returns resource and app data for each match.
     Results are sorted by last updated timestamp.
     """
-    # Try local_id field first, fallback to hkid for backward compatibility
-    q = {"tenant": settings.tenant, "resourceType": "Patient", "$or": [
-        {"search.local_id": local_id},
-        {"search.hkid": local_id}
-    ]}
-    if hospCode:
-        q["search.mrns.hospCode"] = hospCode
-    coll = get_collection()
-    cur = coll.find(q, {"resource":1, "app":1}).sort("resource.meta.lastUpdated", -1).skip((page-1)*limit).limit(limit)
-    return [ {"resource": d["resource"], "app": d.get("app",{})} for d in cur ]
 
-# Keep existing endpoint for backward compatibility
-@app.get("/patients/by-hkid", tags=["Application API"], summary="Find patients by HKID (deprecated - use by-local-id)")
-def patient_by_hkid(hkid: str, hospCode: Optional[str] = None, limit: int = 20, page: int = 1):
-    """
-    Find patient records by HKID.
-    
-    DEPRECATED: Use /patients/by-local-id instead.
-    Optionally filter by hospital code. Returns resource and app data for each match.
-    Results are sorted by last updated timestamp.
-    """
-    q = {"tenant": settings.tenant, "resourceType": "Patient", "search.hkid": hkid}
+    # Use local_id field for patient lookup
+    q = {"tenant": settings.tenant, "resourceType": "Patient", "search.local_id": local_id}
     if hospCode:
         q["search.mrns.hospCode"] = hospCode
     coll = get_collection()
@@ -450,31 +414,7 @@ def pmi_cases_by_local_id(local_id: str, hospCode: Optional[str]=None, limit: in
     Optionally filter by hospital code. Returns sorted by encounter start date.
     """
     coll = get_collection()
-    # Try local_id field first, fallback to hkid for backward compatibility
-    pat = coll.find_one({"tenant": settings.tenant, "resourceType":"Patient", "$or": [
-        {"search.local_id": local_id},
-        {"search.hkid": local_id}
-    ]}, {"search.patientKey":1})
-    if not pat:
-        return []
-    q = {"tenant": settings.tenant, "resourceType":"Encounter", "search.patientKey": pat["search"]["patientKey"]}
-    if hospCode:
-        q["search.hospCode"] = hospCode
-    cur = coll.find(q, {"resource":1, "app":1}).sort("search.start", -1).skip((page-1)*limit).limit(limit)
-    return [ {"resource": d["resource"], "app": d.get("app",{})} for d in cur ]
-
-# Keep existing endpoint for backward compatibility
-@app.get("/pmicases/by-hkid", tags=["Application API"], summary="Get PMI cases by HKID (deprecated - use by-local-id)")
-def pmi_cases_by_hkid(hkid: str, hospCode: Optional[str]=None, limit: int = 50, page: int = 1):
-    """
-    Retrieve Patient Management Information (PMI) cases by HKID.
-    
-    DEPRECATED: Use /pmicases/by-local-id instead.
-    Finds all encounters (hospital visits) associated with a patient's HKID.
-    Optionally filter by hospital code. Returns sorted by encounter start date.
-    """
-    coll = get_collection()
-    pat = coll.find_one({"tenant": settings.tenant, "resourceType":"Patient", "search.hkid": hkid}, {"search.patientKey":1})
+    pat = coll.find_one({"tenant": settings.tenant, "resourceType":"Patient", "search.local_id": local_id}, {"search.patientKey":1})
     if not pat:
         return []
     q = {"tenant": settings.tenant, "resourceType":"Encounter", "search.patientKey": pat["search"]["patientKey"]}
@@ -545,25 +485,25 @@ def cpi_cases_by_mo(
 
 # ========== CUSTOMER SPEC-COMPLIANT API ==========
 
-@app.get("/api/v1/patient/_by-hkid/", tags=["Application API"], summary="[SPEC] Find patients by HKID (GET)")
-@app.post("/api/v1/patient/_by-hkid/find", tags=["Application API"], summary="[SPEC] Find patients by HKID (POST)")
-def spec_patient_by_hkid(
-    hkid: Optional[str] = None,
+@app.get("/api/v1/patient/_by-local-id/", tags=["Application API"], summary="[SPEC] Find patients by Local ID (GET)")
+@app.post("/api/v1/patient/_by-local-id/find", tags=["Application API"], summary="[SPEC] Find patients by Local ID (POST)")
+def spec_patient_by_local_id(
+    local_id: Optional[str] = None,
     hospCode: Optional[str] = None,
     limit: int = 20,
     page: int = 1
 ):
     """
-    Customer spec-compliant endpoint: Find patients by HKID.
+    Customer spec-compliant endpoint: Find patients by Local ID.
 
     Supports both GET and POST methods as per customer specification.
     Returns data in format: {"data": [...], "count": N}
 
-    Parameters match MDM_PMI_patient_api specification (legacy: MDM_HKPMI_patient_api).
+    Parameters match MDM_PMI_patient_api specification.
     """
     q = {"tenant": settings.tenant, "resourceType": "Patient"}
-    if hkid:
-        q["search.hkid"] = hkid
+    if local_id:
+        q["search.local_id"] = local_id
     if hospCode:
         q["search.mrns.hospCode"] = hospCode
 
@@ -575,28 +515,28 @@ def spec_patient_by_hkid(
     data = [build_patient_payload(doc.get("resource", {}), doc.get("app", {}), doc.get("_id")) for doc in cur]
     return {"data": data, "count": total}
 
-@app.get("/api/v1/pmi_case/_by-hkid/", tags=["Application API"], summary="[SPEC] Get PMI cases by HKID (GET)")
-@app.post("/api/v1/pmi_case/_by-hkid/find", tags=["Application API"], summary="[SPEC] Get PMI cases by HKID (POST)")
-def spec_pmi_cases_by_hkid(
-    hkid: Optional[str] = None,
+@app.get("/api/v1/pmi_case/_by-local-id/", tags=["Application API"], summary="[SPEC] Get PMI cases by Local ID (GET)")
+@app.post("/api/v1/pmi_case/_by-local-id/find", tags=["Application API"], summary="[SPEC] Get PMI cases by Local ID (POST)")
+def spec_pmi_cases_by_local_id(
+    local_id: Optional[str] = None,
     hospCode: Optional[str] = None,
     patientKey: Optional[str] = None,
     limit: int = 20,
     page: int = 1
 ):
     """
-    Customer spec-compliant endpoint: Retrieve PMI cases by HKID.
+    Customer spec-compliant endpoint: Retrieve PMI cases by Local ID.
 
     Supports both GET and POST methods as per customer specification.
     Returns data in format: {"data": [...], "count": N}
 
-    Parameters match MDM_PMI_pmi_case specification (legacy: MDM_HKPMI_pmi_case).
+    Parameters match MDM_PMI_pmi_case specification.
     """
     coll = get_collection()
 
-    # If patientKey is provided, use it directly; otherwise find by HKID
-    if not patientKey and hkid:
-        pat = coll.find_one({"tenant": settings.tenant, "resourceType":"Patient", "search.hkid": hkid}, {"search.patientKey":1})
+    # If patientKey is provided, use it directly; otherwise find by Local ID
+    if not patientKey and local_id:
+        pat = coll.find_one({"tenant": settings.tenant, "resourceType":"Patient", "search.local_id": local_id}, {"search.patientKey":1})
         if not pat:
             return {"data": [], "count": 0}
         patientKey = pat["search"]["patientKey"]
@@ -840,7 +780,7 @@ def fhir_patient(request: Request, limit: int = 20, page: int = 1):
     FHIR R4 compliant Patient search endpoint with advanced search parameters.
 
     Supports multiple FHIR search parameters:
-    - `identifier` - Search by identifier with system|value format (hkid|A123456(7), mrn:HOSPCODE|12345)
+    - `identifier` - Search by identifier with system|value format (local_id|A123456(7), mrn:HOSPCODE|12345)
     - `name` - Search by any name (family, given, or text)
     - `family` - Search by family name
     - `given` - Search by given name
@@ -930,7 +870,7 @@ def fhir_encounter(
     - `class` - Encounter class code (inpatient, outpatient, emergency, etc.)
     - `type` - Encounter type with system|code format
     - `subject` or `patient` - Patient reference (Patient/123 or use subject.identifier)
-    - `subject.identifier` - Patient identifier (format: hkid|A123456(7))
+    - `subject.identifier` - Patient identifier (format: local_id|A123456(7))
     - `participant` or `practitioner` - Practitioner reference
     - `participant.identifier` - Practitioner/doctor code
     - `date` - Date range when encounter occurred (supports prefixes)

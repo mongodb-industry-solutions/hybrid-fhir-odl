@@ -78,7 +78,7 @@ frontend/
 ### Resource Browser
 - Browse all FHIR resources in MongoDB
 - Filter by resource type
-- Search by Local ID, HKID (legacy), case number, codes
+- Search by Local ID, case number, codes
 - View resource details with JSON formatting
 - Side-by-side view of FHIR resource and envelope data
 

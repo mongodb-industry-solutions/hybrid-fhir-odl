@@ -60,7 +60,7 @@ fhir-tool --help
 ## Indexes created
 - Unique: `{ tenant:1, resourceType:1, "resource.id":1 }`
 - Patient by Local ID: `{ tenant:1, resourceType:1, "search.local_id":1 }`
-- Patient by HKID (legacy): `{ tenant:1, resourceType:1, "search.hkid":1 }`
+- Patient by HKID (legacy): Removed - use Local ID instead
 - Encounters by patientKey/time: `{ tenant:1, resourceType:1, "search.patientKey":1, "search.start":-1 }`
 - Team filter: `{ tenant:1, resourceType:1, "search.teamCode":1, "search.statusCode":1 }`
 - Doctor filter: `{ tenant:1, resourceType:1, "search.doctorCode":1, "search.caseType":1 }`
@@ -70,16 +70,12 @@ fhir-tool --help
 ## API endpoints (subset)
 - `GET /health`
 - `GET /patients/by-local-id?local_id=...&hospCode=...`
-- `GET /patients/by-hkid?hkid=...&hospCode=...` (legacy)
 - `GET /pmicases/by-local-id?local_id=...`
-- `GET /pmicases/by-hkid?hkid=...` (legacy)
 - `GET /cpi/cases/by-team?hospCode=...&teamCode=...`
 - `GET /cpi/cases/by-mo?hospCode=...&doctorCode=...`
 - FHIR-like:
   - `GET /fhir/Patient?identifier=local_id|{LOCAL_ID}`
-  - `GET /fhir/Patient?identifier=hkid|{HKID}` (legacy)
   - `GET /fhir/Encounter?subject.identifier=local_id|{LOCAL_ID}`
-  - `GET /fhir/Encounter?subject.identifier=hkid|{HKID}` (legacy)
   - `GET /fhir/Encounter?participant.identifier={doctorCode}`
 
 ## License

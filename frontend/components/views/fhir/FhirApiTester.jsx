@@ -146,8 +146,8 @@ export default function FhirApiTester() {
         basic.push({ label: "All Female Patients", desc: "Filter by gender", params: { gender: "female", limit: "10" }});
         basic.push({ label: "All Male Patients", desc: "Filter by gender", params: { gender: "male", limit: "10" }});
       }
-      if (sampleValues.hkids?.length > 0) {
-        basic.push({ label: `Specific Patient (${sampleValues.hkids[0]})`, desc: "Search by HKID", params: { identifier: `hkid|${sampleValues.hkids[0]}` }});
+      if (sampleValues.local_ids?.length > 0) {
+        basic.push({ label: `Specific Patient (${sampleValues.local_ids[0]})`, desc: "Search by Local ID", params: { identifier: `local_id|${sampleValues.local_ids[0]}` }});
       }
       if (sampleValues.familyNames?.length > 1) {
         basic.push({ label: `Name: ${sampleValues.familyNames[0]}`, desc: "Search by family name", params: { family: sampleValues.familyNames[0] }});
@@ -180,22 +180,22 @@ export default function FhirApiTester() {
 
       // Usage Hint: How to use with Encounter
       const usageHint = [];
-      if (sampleValues.hkids?.length > 0) {
+      if (sampleValues.local_ids?.length > 0) {
         usageHint.push({
-          label: `💡 Use ${sampleValues.hkids[0]} with Encounter`,
+          label: `💡 Use ${sampleValues.local_ids[0]} with Encounter`,
           desc: "Switch to Encounter tab to see cross-resource queries",
-          params: { identifier: `hkid|${sampleValues.hkids[0]}` }
+          params: { identifier: `local_id|${sampleValues.local_ids[0]}` }
         });
       }
       if (usageHint.length) categories.push({ name: "💡 Cross-Resource Tip", queries: usageHint });
 
       const extras = [];
-      if (sampleValues.hkids?.length > 0) {
+      if (sampleValues.local_ids?.length > 0) {
         extras.push({
           label: "Patient + Encounters bundle",
           desc: "_revinclude=Encounter:patient",
           params: {
-            identifier: `hkid|${sampleValues.hkids[0]}`,
+            identifier: `local_id|${sampleValues.local_ids[0]}`,
             "_revinclude": "Encounter:patient",
             limit: "5"
           }
@@ -278,41 +278,41 @@ export default function FhirApiTester() {
 
       // Cross-Resource Queries (Patient -> Encounter relationships)
       const crossResource = [];
-      if (sampleValues.hkids?.length > 0) {
+      if (sampleValues.local_ids?.length > 0) {
         crossResource.push({
-          label: `Encounters for Patient ${sampleValues.hkids[0]}`,
-          desc: "Cross-resource: Patient → Encounters via HKID",
-          params: { "subject.identifier": `hkid|${sampleValues.hkids[0]}`, limit: "10" }
+          label: `Encounters for Patient ${sampleValues.local_ids[0]}`,
+          desc: "Cross-resource: Patient → Encounters via Local ID",
+          params: { "subject.identifier": `local_id|${sampleValues.local_ids[0]}`, limit: "10" }
         });
       }
-      if (sampleValues.hkids?.length > 1) {
+      if (sampleValues.local_ids?.length > 1) {
         crossResource.push({
-          label: `Encounters for ${sampleValues.hkids[1]}`,
+          label: `Encounters for ${sampleValues.local_ids[1]}`,
           desc: "Different patient's encounters",
-          params: { "subject.identifier": `hkid|${sampleValues.hkids[1]}`, limit: "10" }
+          params: { "subject.identifier": `local_id|${sampleValues.local_ids[1]}`, limit: "10" }
         });
       }
-      if (sampleValues.hkids?.length > 0 && sampleValues.statuses?.includes("finished")) {
+      if (sampleValues.local_ids?.length > 0 && sampleValues.statuses?.includes("finished")) {
         crossResource.push({
-          label: `Finished visits for ${sampleValues.hkids[0]}`,
+          label: `Finished visits for ${sampleValues.local_ids[0]}`,
           desc: "Patient encounters + status filter",
-          params: { "subject.identifier": `hkid|${sampleValues.hkids[0]}`, status: "finished", limit: "10" }
+          params: { "subject.identifier": `local_id|${sampleValues.local_ids[0]}`, status: "finished", limit: "10" }
         });
       }
-      if (sampleValues.hkids?.length > 0 && sampleValues.hospitalCodes?.length > 0) {
+      if (sampleValues.local_ids?.length > 0 && sampleValues.hospitalCodes?.length > 0) {
         crossResource.push({
-          label: `${sampleValues.hkids[0]} @ ${sampleValues.hospitalCodes[0]}`,
+          label: `${sampleValues.local_ids[0]} @ ${sampleValues.hospitalCodes[0]}`,
           desc: "Patient encounters at specific hospital",
-          params: { "subject.identifier": `hkid|${sampleValues.hkids[0]}`, "service-provider": sampleValues.hospitalCodes[0], limit: "10" }
+          params: { "subject.identifier": `local_id|${sampleValues.local_ids[0]}`, "service-provider": sampleValues.hospitalCodes[0], limit: "10" }
         });
       }
-      if (sampleValues.hkids?.length > 0 && sampleValues.dateRange) {
+      if (sampleValues.local_ids?.length > 0 && sampleValues.dateRange) {
         const recent = new Date(sampleValues.dateRange.max);
         recent.setMonth(recent.getMonth() - 3);
         crossResource.push({
-          label: `${sampleValues.hkids[0]} Recent 3mo`,
+          label: `${sampleValues.local_ids[0]} Recent 3mo`,
           desc: "Patient's recent encounters (date filter)",
-          params: { "subject.identifier": `hkid|${sampleValues.hkids[0]}`, "date-start": `ge${recent.toISOString().split('T')[0]}`, limit: "10" }
+          params: { "subject.identifier": `local_id|${sampleValues.local_ids[0]}`, "date-start": `ge${recent.toISOString().split('T')[0]}`, limit: "10" }
         });
       }
       if (crossResource.length) categories.push({ name: "Cross-Resource Queries (Patient → Encounter)", queries: crossResource });

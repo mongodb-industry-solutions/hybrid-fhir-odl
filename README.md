@@ -1,6 +1,6 @@
-# FHIR Hybrid Data Management Platform
+# FHIR Hybrid Data Manager Reference Pattern
 
-A comprehensive FHIR R4 compliant healthcare data management system with MongoDB backend, featuring advanced search capabilities and an interactive API demonstrator.
+A comprehensive FHIR first healthcare data management system with MongoDB backend, featuring advanced search capabilities and an interactive API demonstrator. This reference pattern demonstrates a FHIR aware system architecture optimized for real-world healthcare data scenarios.
 
 ## 🚀 Quick Start - Ready to Run!
 
@@ -153,7 +153,7 @@ hybrid-odl/
    - PMI (Patient Management Information) case queries
    - CPI (Clinical Process Improvement) queries
 
-3. **FHIR R4 API** - Standards-compliant healthcare interoperability
+3. **FHIR R4 API** - FHIR aware healthcare interoperability
    - Patient search (20+ parameters)
    - Encounter search (15+ parameters)
    - Accelerated and canonical search modes
@@ -164,7 +164,7 @@ hybrid-odl/
 #### 1. Resource Browser Tab
 - View all FHIR resources from MongoDB
 - Filter by resource type (Patient, Encounter, Practitioner, CareTeam)
-- Search by Local ID, HKID (legacy), case number, codes
+- Search by Local ID, case number, codes
 - Click to view full resource details
 - Side-by-side JSON view with both FHIR resource and envelope data
 
@@ -183,7 +183,7 @@ hybrid-odl/
 - **Cross-resource demonstrations** - Patient-Encounter relationships
 - **Visual categorization** - Basic, Complex, Cross-resource
 - **Auto-discovery** - Populates examples from your database
-- **Dual search modes** - Accelerated (fast) vs Canonical (spec-compliant)
+- **Dual search modes** - Accelerated (fast) vs Canonical (FHIR aware)
 - **Debug mode** - View MongoDB filters
 
 ## 🎯 Getting Started - First Use
@@ -238,8 +238,7 @@ curl -H "x-search-mode: accelerated" \
 
 # Find encounters for a specific patient (cross-resource)
 curl "http://localhost:8000/fhir/Encounter?subject.identifier=local_id|A224515(2)&limit=10"
-# Legacy HKID also supported:
-# curl "http://localhost:8000/fhir/Encounter?subject.identifier=hkid|A224515(2)&limit=10"
+# Use Local ID for patient identification
 
 # Complex query: Recent encounters for a doctor at specific hospital
 curl "http://localhost:8000/fhir/Encounter?participant.identifier=D-1310&service-provider=QH&date-start=ge2025-09-01&limit=10"
@@ -268,8 +267,8 @@ NEXT_PUBLIC_ENABLE_FHIR=true
 
 **Canonical Mode**:
 - Uses standard FHIR `resource.*` fields
-- Slower but spec-compliant
-- Best for standards validation
+- Slower but FHIR first approach
+- Best for FHIR standards validation
 
 ## 🏥 Healthcare Data Model
 
@@ -288,7 +287,7 @@ Resources are stored with three sections:
 ```
 
 This hybrid approach provides:
-- ✅ FHIR R4 compliance
+- ✅ FHIR first data model
 - ✅ Fast search performance
 - ✅ Custom business logic support
 - ✅ Multi-tenancy
@@ -307,7 +306,7 @@ This hybrid approach provides:
 ### Regional Healthcare Support
 
 - Local ID search (primary)
-- HKID (Hong Kong ID) search (legacy)
+- Local ID search for patient identification
 - Hospital-specific MRN (Medical Record Numbers)
 - PMI case management
 - CPI (Clinical Process Improvement) workflows
@@ -447,7 +446,7 @@ After following the quick start, you should have:
 
 ## 🤝 Contributing
 
-This is a demonstration/reference implementation showing:
+This is a demonstration reference pattern showing:
 - FHIR R4 API design patterns
 - MongoDB document design for healthcare
 - Fast search with pre-computed indexes
