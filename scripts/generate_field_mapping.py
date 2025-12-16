@@ -45,7 +45,7 @@ ROWS: List[Dict[str, str]] = [
     row("Patient", "patientName", "Legacy display name", "APP", "Application", "app.patientName", "Copy of English name for CPI snapshots"),
     row("Patient", "accessCode", "Access permission code", "APP", "Application", "app.accessCode", "Stored only in application bucket"),
     row("Patient", "deathIndicator", "Legacy death flag", "APP", "Application", "app.deathIndicator", "String (Y/N) derived from Patient.deceased*"),
-    row("Patient", "hkid", "HKID identifier", "FHIR_CORE", "Patient", "Patient.identifier(system=\"hkid\")", "Identifier token; mirror to search.hkid", "Yes", "Patient.identifier"),
+
     row("Patient", "medicalRecNum[]", "MRNs per hospital", "FHIR_CORE", "Patient", "Patient.identifier(system=\"mrn:{hosp}\")", "Split identifiers with mrn: prefix; emit {hospCode,mrn}", "Yes", "Patient.identifier"),
     row("Patient", "hospitalData[]", "Snapshot MRN list", "APP", "Application", "app.hospitalData[]", "Augment MRNs with `_id` + patientKey for CPI payloads"),
     row("Patient", "homePhone", "Home phone", "FHIR_CORE", "Patient", "Patient.telecom[use=home]", "Lookup telecom entry where system=phone & use=home"),

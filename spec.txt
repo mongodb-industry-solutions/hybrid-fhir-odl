@@ -1,6 +1,6 @@
 --- PAGE 1 ---
 APIandMDMBuilding
-1.PATIENT_BY_LOCAL_ID (legacy: PATIENT_BY_HKID)
+1.PATIENT_BY_LOCAL_ID
 1.1APIDetails
 AccessPath
 RequestMethod AccessPath

@@ -18,7 +18,7 @@ Bucket legend: `FHIR_CORE` (native resource fields), `APP` (application-only), `
 | Patient | patientName | Legacy display name | APP | Application | app.patientName | Copy of English name for CPI snapshots | No |  |
 | Patient | accessCode | Access permission code | APP | Application | app.accessCode | Stored only in application bucket | No |  |
 | Patient | deathIndicator | Legacy death flag | APP | Application | app.deathIndicator | String (Y/N) derived from Patient.deceased* | No |  |
-| Patient | hkid | HKID identifier | FHIR_CORE | Patient | Patient.identifier(system="hkid") | Identifier token; mirror to search.hkid | Yes | Patient.identifier |
+
 | Patient | medicalRecNum[] | MRNs per hospital | FHIR_CORE | Patient | Patient.identifier(system="mrn:{hosp}") | Split identifiers with mrn: prefix; emit {hospCode,mrn} | Yes | Patient.identifier |
 | Patient | hospitalData[] | Snapshot MRN list | APP | Application | app.hospitalData[] | Augment MRNs with `_id` + patientKey for CPI payloads | No |  |
 | Patient | homePhone | Home phone | FHIR_CORE | Patient | Patient.telecom[use=home] | Lookup telecom entry where system=phone & use=home | No |  |

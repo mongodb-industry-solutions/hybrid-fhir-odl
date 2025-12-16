@@ -164,7 +164,7 @@ hybrid-odl/
 #### 1. Resource Browser Tab
 - View all FHIR resources from MongoDB
 - Filter by resource type (Patient, Encounter, Practitioner, CareTeam)
-- Search by Local ID, HKID (legacy), case number, codes
+- Search by Local ID, case number, codes
 - Click to view full resource details
 - Side-by-side JSON view with both FHIR resource and envelope data
 
@@ -238,8 +238,7 @@ curl -H "x-search-mode: accelerated" \
 
 # Find encounters for a specific patient (cross-resource)
 curl "http://localhost:8000/fhir/Encounter?subject.identifier=local_id|A224515(2)&limit=10"
-# Legacy HKID also supported:
-# curl "http://localhost:8000/fhir/Encounter?subject.identifier=hkid|A224515(2)&limit=10"
+# Use Local ID for patient identification
 
 # Complex query: Recent encounters for a doctor at specific hospital
 curl "http://localhost:8000/fhir/Encounter?participant.identifier=D-1310&service-provider=QH&date-start=ge2025-09-01&limit=10"
@@ -307,7 +306,7 @@ This hybrid approach provides:
 ### Regional Healthcare Support
 
 - Local ID search (primary)
-- HKID (Hong Kong ID) search (legacy)
+- Local ID search for patient identification
 - Hospital-specific MRN (Medical Record Numbers)
 - PMI case management
 - CPI (Clinical Process Improvement) workflows

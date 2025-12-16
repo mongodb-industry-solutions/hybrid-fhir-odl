@@ -44,7 +44,7 @@ export default function FhirResourceBrowser() {
           </select>
         </div>
         <div className="flex-1">
-          <label className="block text-xs text-slate-400 mb-1">Search (HKID, caseNum, doctorCode, teamCode, hospCode, id)</label>
+          <label className="block text-xs text-slate-400 mb-1">Search (local_id, caseNum, doctorCode, teamCode, hospCode, id)</label>
           <div className="flex gap-2">
             <input className="flex-1 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-slate-200"
               placeholder="e.g. A123456(7) or C-000123" value={query} onChange={(e)=>setQuery(e.target.value)} />
@@ -71,7 +71,7 @@ export default function FhirResourceBrowser() {
             <tr className="text-left">
               <th className="px-3 py-2 text-slate-300">_id</th>
               <th className="px-3 py-2 text-slate-300">resource.id</th>
-              <th className="px-3 py-2 text-slate-300">hkid / caseNum</th>
+              <th className="px-3 py-2 text-slate-300">local_id / caseNum</th>
               <th className="px-3 py-2 text-slate-300">hosp/ward/spec</th>
               <th className="px-3 py-2"></th>
             </tr>
@@ -81,7 +81,7 @@ export default function FhirResourceBrowser() {
               <tr key={it._id} className="border-t border-slate-700 hover:bg-slate-800/40">
                 <td className="px-3 py-2 text-slate-400">{it._id}</td>
                 <td className="px-3 py-2 text-slate-200">{it.resource?.id}</td>
-                <td className="px-3 py-2 text-slate-200">{it.search?.hkid || it.search?.caseNum || "-"}</td>
+                <td className="px-3 py-2 text-slate-200">{it.search?.local_id || it.search?.caseNum || "-"}</td>
                 <td className="px-3 py-2 text-slate-400">{(it.search?.hospCode || "-")}/{(it.search?.wardCode || "-")}/{(it.search?.specCode || "-")}</td>
                 <td className="px-3 py-2">
                   <button onClick={()=>setSelected(it)} className="px-2 py-1 text-xs bg-slate-700 hover:bg-slate-600 text-slate-100 rounded flex items-center gap-1">

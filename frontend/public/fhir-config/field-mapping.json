@@ -131,17 +131,7 @@
     "Indexed?": "No",
     "Search Params": ""
   },
-  {
-    "Domain": "Patient",
-    "Field": "hkid",
-    "Interpretation": "HKID identifier",
-    "Bucket": "FHIR_CORE",
-    "FHIR Resource": "Patient",
-    "Target Path": "Patient.identifier(system=\"hkid\")",
-    "Transformation": "Identifier token; mirror to search.hkid",
-    "Indexed?": "Yes",
-    "Search Params": "Patient.identifier"
-  },
+
   {
     "Domain": "Patient",
     "Field": "medicalRecNum[]",

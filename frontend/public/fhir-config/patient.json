@@ -8,13 +8,7 @@
         "address-city": "barcelona"
       }
     },
-    {
-      "label": "By HKID + city (deprecated)",
-      "params": {
-        "identifier": "hkid|A123456(7)",
-        "address-city": "barcelona"
-      }
-    },
+
     {
       "label": "40-60yo + female + GP=Practitioner/DRX",
       "params": {
@@ -45,7 +39,7 @@
     {
       "name": "identifier",
       "type": "token",
-      "help": "system|value e.g. hkid|V, mrn:HOSP|V"
+      "help": "system|value e.g. local_id|V, mrn:HOSP|V"
     },
     {
       "name": "name",

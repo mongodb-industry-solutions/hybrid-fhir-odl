@@ -24,20 +24,7 @@ const API_ENDPOINTS = {
       { name: "limit", type: "number", required: false, default: 20, help: "Records per page" }
     ]
   },
-  PATIENT_BY_HKID: {
-    name: "PATIENT_BY_HKID",
-    title: "Patient Search by HKID (Legacy)",
-    description: "Find patient records by Hong Kong ID with optional hospital filtering - deprecated, use Local ID",
-    getPath: "/api/v1/patient/_by-hkid/",
-    postPath: "/api/v1/patient/_by-hkid/find",
-    mdm: "MDM_HKPMI_patient_api",
-    params: [
-      { name: "hkid", type: "string", required: false, help: "Hong Kong ID (e.g., A123456(7))" },
-      { name: "hospCode", type: "string", required: false, help: "Hospital Code" },
-      { name: "page", type: "number", required: false, default: 1, help: "Page number" },
-      { name: "limit", type: "number", required: false, default: 20, help: "Records per page" }
-    ]
-  },
+
   PMI_CASE_BY_LOCAL_ID: {
     name: "PMI_CASE_BY_LOCAL_ID",
     title: "PMI Cases by Local ID",
@@ -53,21 +40,7 @@ const API_ENDPOINTS = {
       { name: "limit", type: "number", required: false, default: 20, help: "Records per page" }
     ]
   },
-  PMI_CASE_BY_HKID: {
-    name: "PMI_CASE_BY_HKID",
-    title: "PMI Cases by HKID (Legacy)",
-    description: "Retrieve Patient Management Information cases by HKID - deprecated, use Local ID",
-    getPath: "/api/v1/pmi_case/_by-hkid/",
-    postPath: "/api/v1/pmi_case/_by-hkid/find",
-    mdm: "MDM_HKPMI_pmi_case",
-    params: [
-      { name: "hkid", type: "string", required: false, help: "Hong Kong ID" },
-      { name: "hospCode", type: "string", required: false, help: "Hospital Code" },
-      { name: "patientKey", type: "string", required: false, help: "Patient Key" },
-      { name: "page", type: "number", required: false, default: 1, help: "Page number" },
-      { name: "limit", type: "number", required: false, default: 20, help: "Records per page" }
-    ]
-  },
+
   CPI_CASE_BY_TEAM: {
     name: "CPI_CASE_BY_TEAM",
     title: "CPI Cases by Team",
@@ -172,7 +145,7 @@ export default function CustomerApiTester() {
   useEffect(() => {
     const fetchSamples = async () => {
       try {
-        const res = await fetch(`${BACKEND_PATH}/inspect/sample-hkid`);
+        const res = await fetch(`${BACKEND_PATH}/inspect/sample-local-id`);
         const data = await res.json();
         setSampleValues(data);
       } catch (err) {
@@ -247,20 +220,12 @@ export default function CustomerApiTester() {
     // Load preset based on available sample values
     const preset = {};
 
-    if (selectedEndpoint === "PATIENT_BY_LOCAL_ID" && sampleValues.hkid) {
-      preset.local_id = sampleValues.hkid;  // Use hkid as sample local_id
+    if (selectedEndpoint === "PATIENT_BY_LOCAL_ID" && sampleValues.local_id) {
+      preset.local_id = sampleValues.local_id;
     }
 
-    if (selectedEndpoint === "PATIENT_BY_HKID" && sampleValues.hkid) {
-      preset.hkid = sampleValues.hkid;
-    }
-
-    if (selectedEndpoint === "PMI_CASE_BY_LOCAL_ID" && sampleValues.hkid) {
-      preset.local_id = sampleValues.hkid;  // Use hkid as sample local_id
-    }
-
-    if (selectedEndpoint === "PMI_CASE_BY_HKID" && sampleValues.hkid) {
-      preset.hkid = sampleValues.hkid;
+    if (selectedEndpoint === "PMI_CASE_BY_LOCAL_ID" && sampleValues.local_id) {
+      preset.local_id = sampleValues.local_id;
     }
 
     if ((selectedEndpoint === "CPI_CASE_BY_TEAM" || selectedEndpoint === "CPI_CASE_BY_MO") && sampleValues.hospitalCodes?.length > 0) {
