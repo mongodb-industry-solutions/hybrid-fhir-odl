@@ -69,6 +69,10 @@ def _as_list(value: Any) -> List[str]:
 
 # ========== ADMIN API ==========
 
+@app.get("/")
+async def read_root(request: Request):
+    return {"message": "Server is running"}
+
 @app.get("/health", tags=["Admin API"], summary="Health check")
 def health():
     """
