@@ -413,6 +413,9 @@ def patient_by_local_id(local_id: str, hospCode: Optional[str] = None, limit: in
     Optionally filter by hospital code. Returns resource and app data for each match.
     Results are sorted by last updated timestamp.
     """
+    # Include console log for debugging
+    print(f"Searching patients by local_id: {local_id}")
+
     # Try local_id field first, fallback to hkid for backward compatibility
     q = {"tenant": settings.tenant, "resourceType": "Patient", "$or": [
         {"search.local_id": local_id},
@@ -575,6 +578,40 @@ def spec_patient_by_hkid(
     data = [build_patient_payload(doc.get("resource", {}), doc.get("app", {}), doc.get("_id")) for doc in cur]
     return {"data": data, "count": total}
 
+@app.get("/api/v1/patient/_by-local-id/", tags=["Application API"], summary="[SPEC] Find patients by Local ID (GET)")
+@app.post("/api/v1/patient/_by-local-id/find", tags=["Application API"], summary="[SPEC] Find patients by Local ID (POST)")
+def spec_patient_by_local_id(
+    local_id: Optional[str] = None,
+    hospCode: Optional[str] = None,
+    limit: int = 20,
+    page: int = 1
+):
+    """
+    Customer spec-compliant endpoint: Find patients by Local ID.
+
+    Supports both GET and POST methods as per customer specification.
+    Returns data in format: {"data": [...], "count": N}
+
+    Parameters match MDM_PMI_patient_api specification.
+    """
+    q = {"tenant": settings.tenant, "resourceType": "Patient"}
+    if local_id:
+        # Try local_id field first, fallback to hkid for backward compatibility
+        q["$or"] = [
+            {"search.local_id": local_id},
+            {"search.hkid": local_id}
+        ]
+    if hospCode:
+        q["search.mrns.hospCode"] = hospCode
+
+    coll = get_collection()
+    total = coll.count_documents(q)
+    cur = list(
+        coll.find(q, {"resource": 1, "app": 1}).sort("resource.meta.lastUpdated", -1).skip((page - 1) * limit).limit(limit)
+    )
+    data = [build_patient_payload(doc.get("resource", {}), doc.get("app", {}), doc.get("_id")) for doc in cur]
+    return {"data": data, "count": total}
+
 @app.get("/api/v1/pmi_case/_by-hkid/", tags=["Application API"], summary="[SPEC] Get PMI cases by HKID (GET)")
 @app.post("/api/v1/pmi_case/_by-hkid/find", tags=["Application API"], summary="[SPEC] Get PMI cases by HKID (POST)")
 def spec_pmi_cases_by_hkid(
@@ -597,6 +634,78 @@ def spec_pmi_cases_by_hkid(
     # If patientKey is provided, use it directly; otherwise find by HKID
     if not patientKey and hkid:
         pat = coll.find_one({"tenant": settings.tenant, "resourceType":"Patient", "search.hkid": hkid}, {"search.patientKey":1})
+        if not pat:
+            return {"data": [], "count": 0}
+        patientKey = pat["search"]["patientKey"]
+
+    if not patientKey:
+        return {"data": [], "count": 0}
+
+    q = {"tenant": settings.tenant, "resourceType":"Encounter", "search.patientKey": patientKey}
+    if hospCode:
+        q["search.hospCode"] = hospCode
+
+    total = coll.count_documents(q)
+    enc_docs = list(
+        coll.find(q, {"resource": 1, "app": 1, "search.patientKey": 1}).sort("search.start", -1).skip((page - 1) * limit).limit(limit)
+    )
+    patient_ids = [doc.get("search", {}).get("patientKey") for doc in enc_docs if doc.get("search", {}).get("patientKey")]
+    patient_ids = [pid for pid in patient_ids if pid]
+    patient_map: Dict[str, Dict[str, Any]] = {}
+    if patient_ids:
+        patient_cursor = coll.find(
+            {"tenant": settings.tenant, "resourceType": "Patient", "resource.id": {"$in": patient_ids}},
+            {"resource": 1, "app": 1}
+        )
+        for pat_doc in patient_cursor:
+            pid = pat_doc.get("resource", {}).get("id")
+            if pid:
+                patient_map[pid] = pat_doc
+    data = []
+    for doc in enc_docs:
+        pid = doc.get("search", {}).get("patientKey")
+        patient_resource = None
+        patient_payload = None
+        patient_resource = patient_map.get(pid) if pid else None
+        if patient_resource:
+            patient_payload = build_patient_payload(
+                patient_resource.get("resource", {}),
+                patient_resource.get("app", {}),
+                patient_resource.get("_id"),
+            )
+        encounter_payload = build_encounter_payload(doc.get("resource", {}), doc.get("app", {}), doc.get("_id"), None)
+        if patient_payload:
+            encounter_payload["patient"] = patient_payload
+        data.append(encounter_payload)
+
+    return {"data": data, "count": total}
+
+@app.get("/api/v1/pmi_case/_by-local-id/", tags=["Application API"], summary="[SPEC] Get PMI cases by Local ID (GET)")
+@app.post("/api/v1/pmi_case/_by-local-id/find", tags=["Application API"], summary="[SPEC] Get PMI cases by Local ID (POST)")
+def spec_pmi_cases_by_local_id(
+    local_id: Optional[str] = None,
+    hospCode: Optional[str] = None,
+    patientKey: Optional[str] = None,
+    limit: int = 20,
+    page: int = 1
+):
+    """
+    Customer spec-compliant endpoint: Retrieve PMI cases by Local ID.
+
+    Supports both GET and POST methods as per customer specification.
+    Returns data in format: {"data": [...], "count": N}
+
+    Parameters match MDM_PMI_pmi_case specification.
+    """
+    coll = get_collection()
+
+    # If patientKey is provided, use it directly; otherwise find by Local ID
+    if not patientKey and local_id:
+        # Try local_id field first, fallback to hkid for backward compatibility
+        pat = coll.find_one({"tenant": settings.tenant, "resourceType":"Patient", "$or": [
+            {"search.local_id": local_id},
+            {"search.hkid": local_id}
+        ]}, {"search.patientKey":1})
         if not pat:
             return {"data": [], "count": 0}
         patientKey = pat["search"]["patientKey"]

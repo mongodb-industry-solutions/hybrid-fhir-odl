@@ -217,8 +217,12 @@ export default function CustomerApiTester() {
         options.body = JSON.stringify(params);
       }
 
+      console.log("Request URL:", url);
+
       const res = await fetch(url, options);
       const data = await res.json();
+
+      console.log("Response Data:", data);
 
       if (!res.ok) {
         throw new Error(data.detail || `HTTP ${res.status}`);
