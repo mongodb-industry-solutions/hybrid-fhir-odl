@@ -176,7 +176,6 @@ def sample_local_id():
     """
     coll = get_collection()
     doc = coll.find_one({"tenant": settings.tenant, "resourceType":"Patient", "search.local_id": {"$exists": True}}, {"search.local_id":1})
-    return {"local_id": None}
     return {"local_id": (doc or {}).get("search",{}).get("local_id")}
 
 
