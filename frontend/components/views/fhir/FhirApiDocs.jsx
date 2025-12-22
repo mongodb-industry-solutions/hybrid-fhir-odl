@@ -4,7 +4,7 @@ import React from "react";
 import { Book, ExternalLink, Activity, Server, Shield, Database } from "lucide-react";
 
 export default function FhirApiDocs() {
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3100";
+  const backendUrl = process.env.BACKEND_URL || "http://localhost:3100";
   console.log("Backend URL for API Docs:", backendUrl);
 
   return (

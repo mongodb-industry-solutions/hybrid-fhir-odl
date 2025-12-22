@@ -254,7 +254,7 @@ MONGODB_URI=mongodb+srv://...
 MONGODB_TENANT=your-tenant-id
 
 # Frontend (optional)
-NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+BACKEND_URL=http://localhost:8000
 NEXT_PUBLIC_ENABLE_FHIR=true
 ```
 

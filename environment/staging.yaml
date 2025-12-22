@@ -1,7 +1,7 @@
 env:
   NODE_ENV: staging
   # Backend API URL for frontend to connect to backend health check - get <service-name> using kubectl get services
-  NEXT_PUBLIC_BACKEND_URL: http://hybrid-fhir-odl-backend-web-app:80  # or http://localhost:8000 if multicontainer pod is setup and backend is running on 8000
+  BACKEND_URL: http://hybrid-fhir-odl-backend-web-app:80  # or http://localhost:8000 if multicontainer pod is setup and backend is running on 8000
   NEXT_PUBLIC_ENABLE_FHIR: "true"
 
 ## Single Pod Containers
