@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Query, Body, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional, List, Dict, Any
 from .db import get_collection
 from .config import settings
@@ -40,6 +41,15 @@ app = FastAPI(
     version="0.1.2",
     description="Three distinct APIs for FHIR healthcare data management: Admin operations, Application-specific business logic, and HL7 FHIR R4 compliant endpoints.",
     openapi_tags=tags_metadata
+)
+
+# Configure CORS middleware to allow frontend access
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://hybrid-fhir-odl-frontend.industrysolutions.staging.corp.mongodb.com/", "https://hybrid-fhir-odl-frontend.industrysolutions.prod.corp.mongodb.com/"], 
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 def _normalize_query_params(params: QueryParams) -> Dict[str, Any]:
