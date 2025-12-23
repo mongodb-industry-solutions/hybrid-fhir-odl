@@ -104,7 +104,7 @@ const ExplanationTab = () => {
         <div className="space-y-3 text-slate-300">
           <p>
             This FHIR-first data manager provides specialized tools for clinical data integration, 
-            emphasizing FHIR (Fast Healthcare Interoperability Resources) standards while supporting 
+            emphasizing FHIR standards while supporting 
             legacy customer API integrations for seamless healthcare interoperability.
           </p>
           <div className="grid md:grid-cols-2 gap-4 mt-4">
