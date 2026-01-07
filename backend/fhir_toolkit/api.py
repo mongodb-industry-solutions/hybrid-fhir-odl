@@ -164,6 +164,39 @@ def admin_wipe(
     res = coll.delete_many({"tenant": tenant_key})
     return {"ok": True, "deleted": res.deleted_count, "tenant": tenant_key}
 
+@app.get("/admin/stats", tags=["Admin API"], summary="Get tenant statistics")
+def admin_stats(tenant: Optional[str] = Query(None, description="Override tenant for stats")):
+    """
+    Get document statistics for the current tenant.
+    
+    Returns total document count and breakdown by resource type.
+    Useful for monitoring document limits and usage.
+    """
+    tenant_key = tenant or settings.tenant
+    coll = get_collection()
+    
+    # Get total document count for the tenant
+    total_documents = coll.count_documents({"tenant": tenant_key})
+    
+    # Get breakdown by resource type
+    pipeline = [
+        {"$match": {"tenant": tenant_key}},
+        {"$group": {"_id": "$resourceType", "count": {"$sum": 1}}},
+        {"$sort": {"_id": 1}}
+    ]
+    resource_counts = list(coll.aggregate(pipeline))
+    
+    # Format resource breakdown
+    breakdown = {}
+    for item in resource_counts:
+        breakdown[item["_id"]] = item["count"]
+    
+    return {
+        "tenant": tenant_key,
+        "total_documents": total_documents,
+        "resource_breakdown": breakdown
+    }
+
 # ========== APPLICATION API ==========
 
 @app.get("/inspect/distinctResourceTypes", tags=["Application API"], summary="List all resource types")
