@@ -101,7 +101,7 @@
   {
     "Domain": "Patient",
     "Field": "patientName",
-    "Interpretation": "Legacy display name",
+    "Interpretation": "Custom display name",
     "Bucket": "APP",
     "FHIR Resource": "Application",
     "Target Path": "app.patientName",
@@ -123,7 +123,7 @@
   {
     "Domain": "Patient",
     "Field": "deathIndicator",
-    "Interpretation": "Legacy death flag",
+    "Interpretation": "Custom death flag",
     "Bucket": "APP",
     "FHIR Resource": "Application",
     "Target Path": "app.deathIndicator",
@@ -311,7 +311,7 @@
   {
     "Domain": "Patient",
     "Field": "ccCodes[]",
-    "Interpretation": "Legacy CC code list",
+    "Interpretation": "Custom CC code list",
     "Bucket": "APP",
     "FHIR Resource": "Application",
     "Target Path": "app.ccCodes",
@@ -344,7 +344,7 @@
   {
     "Domain": "Patient",
     "Field": "lastUpdateDatetime",
-    "Interpretation": "Legacy camelCase timestamp",
+    "Interpretation": "Custom camelCase timestamp",
     "Bucket": "APP",
     "FHIR Resource": "Application",
     "Target Path": "app.lastUpdateDatetime",
@@ -370,7 +370,7 @@
     "Bucket": "FHIR_CORE",
     "FHIR Resource": "Encounter",
     "Target Path": "Encounter.identifier(system=\"caseNum\")",
-    "Transformation": "Use identifier token with legacy system",
+    "Transformation": "Use identifier token with custom system",
     "Indexed?": "Yes",
     "Search Params": "Encounter.identifier"
   },
@@ -568,7 +568,7 @@
     "Bucket": "FHIR_CORE",
     "FHIR Resource": "Encounter",
     "Target Path": "Encounter.identifier(system=\"caseNum\")",
-    "Transformation": "Use identifier token with legacy system",
+    "Transformation": "Use identifier token with custom system",
     "Indexed?": "Yes",
     "Search Params": "Encounter.identifier"
   },

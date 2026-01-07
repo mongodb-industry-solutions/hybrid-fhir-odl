@@ -80,7 +80,7 @@ export default function FhirApiDocs() {
           </div>
 
           <p className="text-slate-300 text-xs leading-relaxed">
-            Legacy healthcare APIs and data inspection endpoints.
+            Custom healthcare APIs and data inspection endpoints.
           </p>
 
           <div className="space-y-1.5">

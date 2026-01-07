@@ -28,7 +28,7 @@ tags_metadata = [
     },
     {
         "name": "Application API",
-        "description": "Custom business logic endpoints including legacy healthcare APIs, data inspection, and discovery tools. Supports local region healthcare conventions (Local ID, PMI cases).",
+        "description": "Custom business logic endpoints including custom healthcare APIs, data inspection, and discovery tools. Supports local region healthcare conventions (Local ID, PMI cases).",
     },
     {
         "name": "FHIR API",
@@ -675,7 +675,7 @@ def spec_cpi_cases_by_mo(
     Supports both GET and POST methods as per customer specification.
     Returns data in format: {"data": [...], "count": N}
 
-    Parameters match MDM_PI_cpi_case specification (legacy: MDM_HPI_cpi_case).
+    Parameters match MDM_PI_cpi_case specification (custom: MDM_HPI_cpi_case).
     Default statusCode is "AC" as per spec.
     Default caseType is ["I","A"] if not specified.
     """

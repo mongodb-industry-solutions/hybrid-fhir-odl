@@ -87,15 +87,15 @@ const ExplanationTab = () => {
     {
       icon: <GitCompare className="text-blue-400" size={20} />,
       title: "FHIR Mappings Tab",
-      description: "View and understand FHIR-to-legacy field mappings for clinical data interoperability",
+      description: "View and understand FHIR-to-custom field mappings for clinical data interoperability",
       features: [
         "View comprehensive FHIR-to-customer field mapping documentation",
         "Download interoperability mapping files in CSV format", 
         "Understand clinical data transformation rules and where each piece of information is located in the new FHIR envelope model",
-        "See how standard FHIR resources map to legacy MDM requirements"
+        "See how standard FHIR resources map to custom MDM requirements"
       ],
-      usage: "Essential for understanding how standardized FHIR clinical data transforms into legacy system formats for seamless interoperability. Use this tab to guide your data integration and ensure all necessary clinical information is accurately mapped.",
-      navigationGuide: "This tab is organized into comprehensive documentation sections that showcase how FHIR clinical data maps to legacy system formats. The interface provides both browsable documentation and downloadable resources for integration teams. **Mapping Area**: Browse through organized sections showing field mappings for each FHIR resource type. For each field of each resource you will find a semantic description, the bucket in which it is being located in the FHIR envelope pattern, the path to find it inside the new documents and how it was altered to be included in it. **Download Section**: Use the download button to get CSV files with the mapping details."},
+      usage: "Essential for understanding how standardized FHIR clinical data transforms into custom system formats for seamless interoperability. Use this tab to guide your data integration and ensure all necessary clinical information is accurately mapped.",
+      navigationGuide: "This tab is organized into comprehensive documentation sections that showcase how FHIR clinical data maps to custom system formats. The interface provides both browsable documentation and downloadable resources for integration teams. **Mapping Area**: Browse through organized sections showing field mappings for each FHIR resource type. For each field of each resource you will find a semantic description, the bucket in which it is being located in the FHIR envelope pattern, the path to find it inside the new documents and how it was altered to be included in it. **Download Section**: Use the download button to get CSV files with the mapping details."},
     {
       icon: <Beaker className="text-green-400" size={20} />,
       title: "Synthetic Clinical Data Tab", 
@@ -123,14 +123,14 @@ const ExplanationTab = () => {
     },
     {
       icon: <Briefcase className="text-purple-400" size={20} />,
-      title: "Legacy Integration APIs Tab",
-      description: "Test and interact with legacy healthcare system API endpoints using clinical parameters",
+      title: "Custom Integration APIs Tab",
+      description: "Test and interact with custom healthcare system API endpoints using clinical parameters",
       features: [
-        "Test legacy system API endpoints with clinical parameters",
-        "View legacy API documentation and healthcare specifications",
+        "Test custom system API endpoints with clinical parameters",
+        "View custom API documentation and healthcare specifications",
         "Execute real integration calls and validate responses"
       ],
-      usage: "Essential for testing FHIR-to-legacy integrations and ensuring clinical data flows correctly between modern FHIR systems and existing healthcare infrastructure.",
+      usage: "Essential for testing FHIR-to-custom integrations and ensuring clinical data flows correctly between modern FHIR systems and existing healthcare infrastructure.",
       navigationGuide: "This tab provides a comprehensive API testing environment with dual functionality - both interactive testing and detailed documentation. The interface splits into distinct sections for efficient workflow between testing endpoints and referencing specifications. **API Tester Section**: Use the main panel to select the specific endpoint and the method (POST or GET) to use. **Documentation Tab**: Switch to the documentation tab for detailed API specifications and examples. This section will be very valuable when trying to understand how each endpoint works. **Parameter Forms**: Fill in required fields with clinical data to test different scenarios.If you don't have an specific resource in mind, try our 'Load Preset' functionality, which will allow you to do a quick search based on preset parameters. Then, use the 'Execute Request' button to send your request and get the results. **Response Panel**: Check the bottom part of the tab for API responses and validation results."
     },
     {
@@ -150,7 +150,7 @@ const ExplanationTab = () => {
       title: "Healthcare API Documentation Tab",
       description: "Comprehensive documentation for FHIR and healthcare integration APIs",
       features: [
-        "Complete FHIR API and legacy endpoint reference documentation",
+        "Complete FHIR API and custom endpoint reference documentation",
         "Interactive healthcare API exploration",
         "Clinical integration code examples and patterns", 
         "Healthcare security and authorization guides"
@@ -170,7 +170,7 @@ const ExplanationTab = () => {
         </div>
         <p className="text-slate-400 max-w-2xl mx-auto">
           Welcome to the Hybrid FHIR ODL demonstration platform. This comprehensive guide explains 
-          our innovative approach to bridging FHIR standards with legacy healthcare systems, 
+          our innovative approach to bridging FHIR standards with custom healthcare systems, 
           and how to effectively use each tool for clinical data integration and interoperability.
         </p>
       </div>
@@ -317,7 +317,7 @@ const ExplanationTab = () => {
             <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">2</span>
             <div>
               <h3 className="font-medium text-slate-300">Understand FHIR Mappings</h3>
-              <p className="text-sm text-slate-400">Check the FHIR Mappings tab to see how clinical data transforms between FHIR standards and legacy formats.</p>
+              <p className="text-sm text-slate-400">Check the FHIR Mappings tab to see how clinical data transforms between FHIR standards and custom formats.</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
@@ -331,7 +331,7 @@ const ExplanationTab = () => {
             <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">4</span>
             <div>
               <h3 className="font-medium text-slate-300">Test Healthcare APIs</h3>
-              <p className="text-sm text-slate-400">Use both FHIR Clinical API and Legacy Integration APIs tabs to validate clinical data flows and responses.</p>
+              <p className="text-sm text-slate-400">Use both FHIR Clinical API and Custom Integration APIs tabs to validate clinical data flows and responses.</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
@@ -361,7 +361,7 @@ const ExplanationTab = () => {
             <ul className="space-y-1 text-sm text-slate-400">
               <li>• Test with various clinical parameter combinations</li>
               <li>• Verify FHIR response formats match healthcare standards</li>
-              <li>• Test both FHIR and legacy endpoints for full coverage</li>
+              <li>• Test both FHIR and custom endpoints for full coverage</li>
             </ul>
           </div>
         </div>
