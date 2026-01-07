@@ -1,9 +1,88 @@
 "use client";
 
-import React from "react";
-import { Book, HelpCircle, GitCompare, Beaker, FileJson2, Briefcase, ServerCog } from "lucide-react";
+import React, { useState } from "react";
+import { Book, Info, GitCompare, Beaker, FileJson2, Briefcase, ServerCog, ChevronDown, ChevronRight, Target, Users, Lightbulb } from "lucide-react";
 
 const ExplanationTab = () => {
+  const [openSection, setOpenSection] = useState('what');
+
+  const toggleSection = (section) => {
+    setOpenSection(openSection === section ? null : section);
+  };
+
+  const introSections = [
+    {
+      id: 'what',
+      title: 'What is this approach?',
+      content: (
+        <div className="space-y-3">
+          <p>
+            We propose a <strong className="text-slate-100">FHIR-first architecture</strong> that serves as a bridge between modern healthcare 
+            standards and existing systems. Our Operational Data Layer (ODL) transforms existing healthcare 
+            data into FHIR-first resources while maintaining backward compatibility with custom APIs.
+          </p>
+          <p>
+            This <strong className="text-slate-100">hybrid approach</strong> ensures seamless interoperability without requiring complete system overhauls, 
+            allowing healthcare organizations to modernize incrementally while preserving existing investments.
+          </p>
+        </div>
+      )
+    },
+    {
+      id: 'why',
+      title: 'Why use it? Our Goal',
+      content: (
+        <div className="space-y-3">
+          <p>
+            The primary goal is to <strong className="text-slate-100">accelerate healthcare digital transformation</strong> by providing 
+            a unified data layer that speaks both FHIR and custom API languages.
+          </p>
+          <p>
+            This platform enables healthcare organizations to adopt modern interoperability standards progressively, 
+            reducing integration complexity and ensuring clinical data flows seamlessly across 
+            different systems, vendors, and care settings.
+          </p>
+          <div className="bg-green-900/20 border border-green-500/20 rounded-lg p-3 mt-3">
+            <p className="text-sm text-green-200">
+              <strong>Key Benefits:</strong> Faster implementation, reduced risk, preserved investments, improved interoperability
+            </p>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'whom',
+      title: 'For Whom? Target Audience',
+      content: (
+        <div className="space-y-4">
+          <p>
+            This demonstration is designed for <strong className="text-slate-100">healthcare IT professionals, system integrators, 
+            and digital health innovators</strong> who are tasked with modernizing healthcare data infrastructure.
+          </p>
+          <div className="grid gap-3">
+            <div className="bg-purple-900/20 border border-purple-500/20 rounded-lg p-3">
+              <h4 className="font-medium text-purple-200 mb-1">Healthcare Developers & Engineers</h4>
+              <p className="text-sm text-purple-100">
+                Experience technical implementation of FHIR APIs, data transformation, and integration patterns
+              </p>
+            </div>
+            <div className="bg-purple-900/20 border border-purple-500/20 rounded-lg p-3">
+              <h4 className="font-medium text-purple-200 mb-1">Healthcare Decision Makers</h4>
+              <p className="text-sm text-purple-100">
+                Understand strategic benefits and practical implications of FHIR adoption strategies
+              </p>
+            </div>
+            <div className="bg-purple-900/20 border border-purple-500/20 rounded-lg p-3">
+              <h4 className="font-medium text-purple-200 mb-1">System Integrators</h4>
+              <p className="text-sm text-purple-100">
+                Explore real-world scenarios for planning system migrations and integration projects
+              </p>
+            </div>
+          </div>
+        </div>
+      )
+    }
+  ];
   const tabExplanations = [
     {
       icon: <GitCompare className="text-blue-400" size={20} />,
@@ -77,7 +156,7 @@ const ExplanationTab = () => {
         "Healthcare security and authorization guides"
       ],
       usage: "Your comprehensive reference for understanding FHIR endpoints, clinical data parameters, and healthcare interoperability patterns.",
-      navigationGuide: "This tab features a comprehensive documentation system with hierarchical navigation, interactive examples, and integrated testing capabilities. The layout maximizes both browsing efficiency and hands-on learning through embedded tools. **Documentation Tiles**: Choose from the 3 available documentation tiles, each of them targeting one of the main API implemented in this data manager. **Documentation Content**: Click the 'View Docs' button and read a extremely detailed documentation with examples in the main content section. **Interactive Examples**: In the bottom part of these documentation files, you will be able to try live API calls directly from the documentation using embedded testing tools. **Search Function**: Use the search bar inside the specific documentation to quickly find endpoints or topics."
+      navigationGuide: "This tab features a comprehensive documentation system with hierarchical navigation, interactive examples, and integrated testing capabilities. The layout maximizes both browsing efficiency and hands-on learning through embedded tools. **Documentation Tiles**: Choose from the 3 available documentation tiles, each of them targeting one of the main API implemented in this platform. **Documentation Content**: Click the 'View Docs' button and read a extremely detailed documentation with examples in the main content section. **Interactive Examples**: In the bottom part of these documentation files, you will be able to try live API calls directly from the documentation using embedded testing tools. **Search Function**: Use the search bar inside the specific documentation to quickly find endpoints or topics."
     }
   ];
 
@@ -86,44 +165,60 @@ const ExplanationTab = () => {
       {/* Header */}
       <div className="text-center border-b border-slate-700 pb-6">
         <div className="flex items-center justify-center gap-2 mb-3">
-          <HelpCircle className="text-blue-400" size={24} />
-          <h1 className="text-2xl font-bold text-slate-200">FHIR Data Manager Guide</h1>
+          <Info className="text-blue-400" size={24} />
+          <h1 className="text-2xl font-bold text-slate-200">Hybrid FHIR ODL Guide</h1>
         </div>
         <p className="text-slate-400 max-w-2xl mx-auto">
-          Welcome to your FHIR-first healthcare data management system. This comprehensive guide explains 
-          each tool and how to effectively use them for clinical data integration and interoperability.
+          Welcome to the Hybrid FHIR ODL demonstration platform. This comprehensive guide explains 
+          our innovative approach to bridging FHIR standards with legacy healthcare systems, 
+          and how to effectively use each tool for clinical data integration and interoperability.
         </p>
       </div>
 
       {/* Getting Started */}
       <div className="bg-gradient-to-r from-blue-900/20 to-purple-900/20 rounded-lg p-6 border border-blue-500/20">
-        <h2 className="text-xl font-semibold text-slate-200 mb-3 flex items-center gap-2">
+        <h2 className="text-xl font-semibold text-slate-200 mb-4 flex items-center gap-2">
           <Book className="text-blue-400" size={20} />
-          Getting Started
+          Our Approach & Vision
         </h2>
-        <div className="space-y-3 text-slate-300">
-          <p>
-            This FHIR-first data manager provides specialized tools for clinical data integration, 
-            emphasizing FHIR standards while supporting 
-            legacy customer API integrations for seamless healthcare interoperability.
-          </p>
-          <div className="grid md:grid-cols-2 gap-4 mt-4">
-            <div className="bg-slate-800/50 rounded p-4">
-              <h3 className="font-medium text-slate-200 mb-2">For Healthcare Developers</h3>
-              <p className="text-sm text-slate-400">
-                Leverage FHIR API testing, synthetic clinical data generation, and interoperability 
-                documentation to build robust healthcare integrations.
-              </p>
+        
+        <div className="space-y-3">
+          {introSections.map((section) => (
+            <div key={section.id} className="border border-slate-600 rounded-lg overflow-hidden">
+              <button
+                onClick={() => toggleSection(section.id)}
+                className="w-full flex items-center justify-between p-4 bg-slate-800/50 hover:bg-slate-700/50 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <h3 className="font-semibold text-slate-200">{section.title}</h3>
+                </div>
+                {openSection === section.id ? (
+                  <ChevronDown className="text-slate-400" size={20} />
+                ) : (
+                  <ChevronRight className="text-slate-400" size={20} />
+                )}
+              </button>
+              
+              {openSection === section.id && (
+                <div className="p-4 bg-slate-800/30 border-t border-slate-600 animate-in slide-in-from-top-2 duration-300">
+                  <div className="text-slate-300 leading-relaxed">
+                    {section.content}
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="bg-slate-800/50 rounded p-4">
-              <h3 className="font-medium text-slate-200 mb-2">For Clinical Data Analysts</h3>
-              <p className="text-sm text-slate-400">
-                Explore FHIR resource structures, clinical data mappings, and healthcare record 
-                transformations to understand data flows and quality.
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
+
+        {/* Quick overview when all sections are closed */}
+        {!openSection && (
+          <div className="mt-4 p-4 bg-slate-800/30 rounded-lg border border-slate-600">
+            <p className="text-sm text-slate-400 text-center italic">
+              👆 Click on any section above to learn more about our hybrid FHIR approach, 
+              goals, and who this demonstration is designed for.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Tab Explanations */}
@@ -134,20 +229,20 @@ const ExplanationTab = () => {
         
         <div className="grid gap-6 lg:grid-cols-2">
           {tabExplanations.map((tab, index) => (
-            <div key={index} className="bg-slate-800 rounded-lg p-6 border border-slate-700 hover:border-slate-600 transition-colors">
+            <div key={index} className="bg-slate-200 rounded-lg p-6 border border-slate-300 hover:border-slate-400 transition-colors shadow-lg">
               <div className="flex items-center gap-3 mb-4">
                 {tab.icon}
-                <h3 className="text-lg font-semibold text-slate-200">{tab.title}</h3>
+                <h3 className="text-lg font-semibold text-slate-800">{tab.title}</h3>
               </div>
               
-              <p className="text-slate-400 mb-4">{tab.description}</p>
+              <p className="text-slate-600 mb-4">{tab.description}</p>
               
               <div className="space-y-3">
-                <h4 className="font-medium text-slate-300">Key Features:</h4>
+                <h4 className="font-medium text-slate-700">Key Features:</h4>
                 <ul className="space-y-1">
                   {tab.features.map((feature, idx) => (
-                    <li key={idx} className="text-sm text-slate-400 flex items-start gap-2">
-                      <span className="text-blue-400 mt-1">•</span>
+                    <li key={idx} className="text-sm text-slate-600 flex items-start gap-2">
+                      <span className="text-blue-500 mt-1">•</span>
                       {feature}
                     </li>
                   ))}
@@ -198,9 +293,9 @@ const ExplanationTab = () => {
                 </div>
               )}
               
-              <div className="mt-4 p-3 bg-slate-900 rounded border border-slate-700">
-                <h4 className="font-medium text-slate-300 text-sm mb-1">When to use:</h4>
-                <p className="text-xs text-slate-400">{tab.usage}</p>
+              <div className="mt-4 p-3 bg-slate-100 rounded border border-slate-300">
+                <h4 className="font-medium text-slate-700 text-sm mb-1">When to use:</h4>
+                <p className="text-xs text-slate-600">{tab.usage}</p>
               </div>
             </div>
           ))}
