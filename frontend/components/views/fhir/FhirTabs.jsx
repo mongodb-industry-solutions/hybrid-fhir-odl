@@ -21,7 +21,7 @@ export default function FhirTabs() {
     <div className="p-4 bg-slate-900 rounded-xl border border-slate-800">
       <div className="flex items-center gap-2 mb-3">
         <Database className="text-blue-400" size={18} />
-        <h2 className="text-slate-200 font-semibold">Hybrid API Data Management</h2>
+        <h2 className="text-slate-200 font-semibold">Hybrid FHIR ODL</h2>
       </div>
       <Tabs defaultValue="mappings" className="w-full">
         <TabsList className="bg-slate-800">

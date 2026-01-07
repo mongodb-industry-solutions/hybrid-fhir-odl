@@ -24,6 +24,14 @@ const AppContainer = () => {
     setTimeout(() => setShowNotification(false), 5300);
   };
 
+  const handleToggleView = () => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setShowHelp(!showHelp);
+      setIsTransitioning(false);
+    }, 300); // Wait for fade-out animation
+  };
+
   return (
     <div className="min-h-screen bg-slate-900">
       {/* Header */}
@@ -33,11 +41,17 @@ const AppContainer = () => {
             <CobrandedLogo size="lg" datalabOnly />
             <div className="flex items-center gap-4">
               <button
-                onClick={() => setShowHelp(!showHelp)}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
+                onClick={handleToggleView}
+                className={`flex items-center gap-2 px-4 py-2 ${
+                  showHelp 
+                    ? 'bg-green-600 hover:bg-green-700' 
+                    : 'bg-blue-600 hover:bg-blue-700'
+                } text-white rounded-lg transition-colors duration-200`}
               >
                 <Info size={16} />
-                <span className="text-sm font-medium">Hybrid FHIR ODL Guide</span>
+                <span className="text-sm font-medium">
+                  {showHelp ? 'Go Back to Demo' : 'Hybrid FHIR ODL Guide'}
+                </span>
               </button>
               <div className="flex items-center gap-1 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
                 <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
@@ -84,12 +98,6 @@ const AppContainer = () => {
             <div className={`relative transition-all duration-300 ease-in-out ${
               isTransitioning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
             }`}>
-              <button
-                onClick={handleCloseHelp}
-                className="absolute top-4 right-4 z-10 p-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-all duration-200 hover:scale-110"
-              >
-                <X size={16} className="text-slate-400" />
-              </button>
               <ExplanationTab />
             </div>
           ) : (
