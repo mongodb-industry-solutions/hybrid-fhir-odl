@@ -221,6 +221,55 @@ const ExplanationTab = () => {
         )}
       </div>
 
+      {/* Workflow Section */}
+      <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+        <h2 className="text-xl font-semibold text-slate-200 mb-4">Recommended Workflow</h2>
+        <div className="space-y-3">
+          <div className="flex items-start gap-3">
+            <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">1</span>
+            <div>
+              <h3 className="font-medium text-slate-300">Review FHIR Mappings & Data Structure</h3>
+              <p className="text-sm text-slate-400">Start by exploring the FHIR Mappings tab to understand how clinical data transforms between FHIR standards and custom API formats. This foundation is crucial for understanding the data structure.</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">2</span>
+            <div>
+              <h3 className="font-medium text-slate-300">Generate Synthetic Clinical Data</h3>
+              <p className="text-sm text-slate-400">Use the Synthetic Clinical Data tab to populate the system with test data. This creates the foundation for testing and exploring the platform's capabilities.</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">3</span>
+            <div>
+              <h3 className="font-medium text-slate-300">Test Custom Integration APIs</h3>
+              <p className="text-sm text-slate-400">Explore the Custom APIs tab to test how the platform handles custom healthcare system integrations and validates data flows between different formats.</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">4</span>
+            <div>
+              <h3 className="font-medium text-slate-300">Test FHIR Clinical APIs</h3>
+              <p className="text-sm text-slate-400">Use the FHIR API tab to test standard FHIR operations and validate how the platform handles modern healthcare interoperability standards.</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">5</span>
+            <div>
+              <h3 className="font-medium text-slate-300">Browse & Monitor Clinical Data</h3>
+              <p className="text-sm text-slate-400">Use the Clinical Data Viewer tab to inspect stored FHIR resources and verify the results of your testing and integration scenarios.</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">6</span>
+            <div>
+              <h3 className="font-medium text-slate-300">Review API Documentation</h3>
+              <p className="text-sm text-slate-400">Reference the API Documentation tab for detailed technical specifications and implementation examples to support your integration planning.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Tab Explanations */}
       <div className="space-y-6">
         <h2 className="text-xl font-semibold text-slate-200 border-b border-slate-700 pb-2">
@@ -299,48 +348,6 @@ const ExplanationTab = () => {
               </div>
             </div>
           ))}
-        </div>
-      </div>
-
-      {/* Workflow Section */}
-      <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-        <h2 className="text-xl font-semibold text-slate-200 mb-4">Clinical Data Management Workflow</h2>
-        <div className="space-y-3">
-          <div className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">1</span>
-            <div>
-              <h3 className="font-medium text-slate-300">Start with Healthcare Documentation</h3>
-              <p className="text-sm text-slate-400">Review the Healthcare API Documentation to understand FHIR endpoints and clinical data structures.</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">2</span>
-            <div>
-              <h3 className="font-medium text-slate-300">Understand FHIR Mappings</h3>
-              <p className="text-sm text-slate-400">Check the FHIR Mappings tab to see how clinical data transforms between FHIR standards and custom formats.</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">3</span>
-            <div>
-              <h3 className="font-medium text-slate-300">Generate Clinical Test Data</h3>
-              <p className="text-sm text-slate-400">Use the Synthetic Clinical Data tab to create test data for development and testing.</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">4</span>
-            <div>
-              <h3 className="font-medium text-slate-300">Test Healthcare APIs</h3>
-              <p className="text-sm text-slate-400">Use both FHIR Clinical API and Custom Integration APIs tabs to validate clinical data flows and responses.</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">5</span>
-            <div>
-              <h3 className="font-medium text-slate-300">Monitor Clinical Data</h3>
-              <p className="text-sm text-slate-400">Use the Clinical Data Viewer tab to inspect stored FHIR resources and verify healthcare integration results.</p>
-            </div>
-          </div>
         </div>
       </div>
 
