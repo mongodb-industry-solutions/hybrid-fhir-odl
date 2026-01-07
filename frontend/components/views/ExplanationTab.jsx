@@ -164,14 +164,14 @@ const ExplanationTab = () => {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="text-center border-b border-slate-700 pb-6">
-        <div className="flex items-center justify-center gap-2 mb-3">
-          <Info className="text-blue-400" size={24} />
-          <h1 className="text-2xl font-bold text-slate-200">Hybrid FHIR ODL Guide</h1>
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <Info className="text-blue-400" size={28} />
+          <h1 className="text-3xl font-bold text-slate-100">Hybrid FHIR ODL Guide</h1>
         </div>
-        <p className="text-slate-400 max-w-2xl mx-auto">
-          Welcome to the Hybrid FHIR ODL demonstration platform. This comprehensive guide explains 
-          our innovative approach to bridging FHIR standards with custom healthcare systems, 
-          and how to effectively use each tool for clinical data integration and interoperability.
+        <p className="text-slate-300 text-lg max-w-2xl mx-auto">
+          Welcome to the <strong className="text-slate-200">Hybrid FHIR ODL</strong> demonstration platform. This <strong className="text-slate-200">comprehensive guide</strong> explains 
+          our <strong className="text-slate-200">innovative approach</strong> to bridging <strong className="text-slate-200">FHIR standards</strong> with custom healthcare systems, 
+          and how to effectively use each tool for <strong className="text-slate-200">clinical data integration</strong> and <strong className="text-slate-200">interoperability</strong>.
         </p>
       </div>
 
