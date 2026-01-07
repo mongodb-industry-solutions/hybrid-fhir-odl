@@ -4,20 +4,25 @@ import React from "react";
 import { Book, ExternalLink, Activity, Server, Shield, Database } from "lucide-react";
 
 export default function FhirApiDocs() {
-  // Simple and reliable backend URL detection
+  // Smart backend URL detection for different environments
   const getBackendUrl = () => {
     if (typeof window === 'undefined') return "http://localhost:3100"; // SSR fallback
     
-    // Use window.location to build the backend URL
-    const { protocol, hostname } = window.location;
+    const { hostname } = window.location;
     
-    // For local development (localhost), always use port 3100
+    // For local development
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return `${protocol}//${hostname}:3100`;
+      return "http://localhost:3100";
     }
     
-    // For Kanopy/production deployments, try port 8080 first
-    return `${protocol}//${hostname}:8080`;
+    // For Kanopy deployments - replace 'frontend' with 'backend' in hostname
+    if (hostname.includes('frontend')) {
+      const backendHostname = hostname.replace('frontend', 'backend');
+      return `http://${backendHostname}`;
+    }
+    
+    // Fallback: try current hostname with http and port 8080
+    return `http://${hostname}:8080`;
   };
   
   const backendUrl = getBackendUrl();
