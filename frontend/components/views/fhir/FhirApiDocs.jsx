@@ -4,7 +4,29 @@ import React from "react";
 import { Book, ExternalLink, Activity, Server, Shield, Database } from "lucide-react";
 
 export default function FhirApiDocs() {
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://backend:3100";
+  // Smart backend URL detection for different environments
+  const getBackendUrl = () => {
+    if (typeof window === 'undefined') return "http://localhost:3100"; // SSR fallback
+    
+    const { hostname } = window.location;
+    
+    // For local development
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return "http://localhost:3100";
+    }
+    
+    // For Kanopy deployments - replace 'frontend' with 'backend' in hostname
+    if (hostname.includes('frontend')) {
+      const backendHostname = hostname.replace('frontend', 'backend');
+      return `http://${backendHostname}`;
+    }
+    
+    // Fallback: try current hostname with http and port 8080
+    return `http://${hostname}:8080`;
+  };
+  
+  const backendUrl = getBackendUrl();
+  console.log("Backend URL for API Docs:", backendUrl);
 
   return (
     <div className="space-y-6">
@@ -79,7 +101,7 @@ export default function FhirApiDocs() {
           </div>
 
           <p className="text-slate-300 text-xs leading-relaxed">
-            Legacy healthcare APIs and data inspection endpoints.
+            Custom healthcare APIs and data inspection endpoints.
           </p>
 
           <div className="space-y-1.5">

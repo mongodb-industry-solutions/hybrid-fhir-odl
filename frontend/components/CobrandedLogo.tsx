@@ -44,18 +44,18 @@ const CobrandedLogo: React.FC<CobrandedLogoProps> = ({
 
   // If showing only DataLab logo
   if (datalabOnly) {
-    const logoWidth = height * (460/120); // Maintain aspect ratio
+    const logoWidth = height * (720/140); // Increased height to accommodate full letter display
     return (
       <div className={className} style={{ height: `${height}px` }}>
         <svg
           width={logoWidth}
           height={height}
-          viewBox="0 0 460 120"
+          viewBox="0 0 720 140"
           xmlns="http://www.w3.org/2000/svg"
           role="img"
-          aria-label="MongoDB Healthcare Data Lab"
+          aria-label="MongoDB Hybrid FHIR ODL Management"
         >
-          <title>MongoDB Healthcare Data Lab</title>
+          <title>MongoDB Hybrid FHIR ODL Management</title>
           <g transform="translate(8,12)">
             <path d="M26 114 C18 86, 18 58, 28 36 C38 16, 54 6, 66 4 C58 18, 52 36, 50 52 C48 70, 52 90, 62 114 Z" fill="#00ED64" />
             <path d="M58 28 C56 54, 58 92, 66 116" stroke="#8CEBB0" strokeWidth="4" fill="none" strokeLinecap="round" />
@@ -64,8 +64,9 @@ const CobrandedLogo: React.FC<CobrandedLogoProps> = ({
             <text x="110" y="68" fill="#FFFFFF">MongoDB</text>
           </g>
           <g fontFamily="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial" fontWeight="700" fontSize="36">
-            <text x="110" y="120" fill="#00ED64">Healthcare</text>
-            <text x="302" y="120" fill="#FFFFFF">Data Lab</text>
+            <text x="110" y="120" fill="#FFFFFF">Hybrid</text>
+            <text x="240" y="120" fill="#00ED64">FHIR</text>
+            <text x="330" y="120" fill="#FFFFFF">ODL Management</text>
           </g>
         </svg>
       </div>

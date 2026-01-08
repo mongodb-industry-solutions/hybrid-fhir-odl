@@ -68,7 +68,7 @@ function CustomerApiDocumentation() {
                   <span className="text-blue-400">POST</span> /api/v1/patient/_by-local-id/find
                 </div>
                 <div className="bg-slate-900 rounded px-2 py-1 font-mono text-xs text-slate-500">
-                  <span className="text-emerald-400">GET</span> /api/v1/patient/_by-hkid/ (legacy)
+                  <span className="text-emerald-400">GET</span> /api/v1/patient/_by-hkid/ (custom)
                 </div>
               </div>
             </div>
@@ -103,7 +103,7 @@ function CustomerApiDocumentation() {
                   <span className="text-blue-400">POST</span> /api/v1/pmi_case/_by-local-id/find
                 </div>
                 <div className="bg-slate-900 rounded px-2 py-1 font-mono text-xs text-slate-500">
-                  <span className="text-emerald-400">GET</span> /api/v1/pmi_case/_by-hkid/ (legacy)
+                  <span className="text-emerald-400">GET</span> /api/v1/pmi_case/_by-hkid/ (custom)
                 </div>
               </div>
             </div>

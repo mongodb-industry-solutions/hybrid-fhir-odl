@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import dynamic from "next/dynamic";
 import { Sparkles, Play, ChevronDown, ChevronUp } from "lucide-react";
 const Monaco = dynamic(() => import("@monaco-editor/react"), { ssr: false });
@@ -114,6 +114,7 @@ export default function FhirApiTester() {
   const [elapsed, setElapsed] = useState(0);
   const [count, setCount] = useState(0);
   const [paramsExpanded, setParamsExpanded] = useState(true);
+  const resultsRef = useRef(null);
 
   useEffect(() => {
     const load = async () => {
@@ -377,6 +378,16 @@ export default function FhirApiTester() {
     console.log('[FhirApiTester] Setting filterJson to:', filterToShow);
     setFilterJson(JSON.stringify(filterToShow, null, 2));
     setSending(false);
+    
+    // Smooth scroll to results section
+    setTimeout(() => {
+      if (resultsRef.current) {
+        resultsRef.current.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }
+    }, 100);
   };
 
   const setParam = (name, val) => setForm(prev => ({ ...prev, [name]: val }));
@@ -531,7 +542,7 @@ export default function FhirApiTester() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" ref={resultsRef}>
         <div className="bg-slate-800 border border-slate-700 rounded p-2">
           <div className="text-slate-200 text-sm mb-1">MongoDB Filter / Pipeline</div>
           <Monaco height="500px" defaultLanguage="json" value={filterJson} onChange={()=>{}} options={{readOnly:true}} />

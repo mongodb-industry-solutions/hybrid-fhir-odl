@@ -148,7 +148,7 @@ hybrid-odl/
    - Data cleanup
 
 2. **Application API** - Custom business logic
-   - Regional healthcare endpoints (Hong Kong legacy support)
+   - Regional healthcare endpoints (Hong Kong custom support)
    - Data inspection and discovery tools
    - PMI (Patient Management Information) case queries
    - CPI (Clinical Process Improvement) queries
@@ -254,7 +254,7 @@ MONGODB_URI=mongodb+srv://...
 MONGODB_TENANT=your-tenant-id
 
 # Frontend (optional)
-NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+BACKEND_URL=http://localhost:8000
 NEXT_PUBLIC_ENABLE_FHIR=true
 ```
 

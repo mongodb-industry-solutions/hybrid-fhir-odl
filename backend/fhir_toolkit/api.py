@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Query, Body, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional, List, Dict, Any
 from .db import get_collection
 from .config import settings
@@ -27,7 +28,7 @@ tags_metadata = [
     },
     {
         "name": "Application API",
-        "description": "Custom business logic endpoints including legacy healthcare APIs, data inspection, and discovery tools. Supports local region healthcare conventions (Local ID, PMI cases).",
+        "description": "Custom business logic endpoints including custom healthcare APIs, data inspection, and discovery tools. Supports local region healthcare conventions (Local ID, PMI cases).",
     },
     {
         "name": "FHIR API",
@@ -40,6 +41,15 @@ app = FastAPI(
     version="0.1.2",
     description="Three distinct APIs for FHIR healthcare data management: Admin operations, Application-specific business logic, and HL7 FHIR R4 compliant endpoints.",
     openapi_tags=tags_metadata
+)
+
+# Configure CORS middleware to allow frontend access
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://hybrid-fhir-odl-frontend.industrysolutions.staging.corp.mongodb.com/", "https://hybrid-fhir-odl-frontend.industrysolutions.prod.corp.mongodb.com/"], 
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 def _normalize_query_params(params: QueryParams) -> Dict[str, Any]:
@@ -154,6 +164,39 @@ def admin_wipe(
     res = coll.delete_many({"tenant": tenant_key})
     return {"ok": True, "deleted": res.deleted_count, "tenant": tenant_key}
 
+@app.get("/admin/stats", tags=["Admin API"], summary="Get tenant statistics")
+def admin_stats(tenant: Optional[str] = Query(None, description="Override tenant for stats")):
+    """
+    Get document statistics for the current tenant.
+    
+    Returns total document count and breakdown by resource type.
+    Useful for monitoring document limits and usage.
+    """
+    tenant_key = tenant or settings.tenant
+    coll = get_collection()
+    
+    # Get total document count for the tenant
+    total_documents = coll.count_documents({"tenant": tenant_key})
+    
+    # Get breakdown by resource type
+    pipeline = [
+        {"$match": {"tenant": tenant_key}},
+        {"$group": {"_id": "$resourceType", "count": {"$sum": 1}}},
+        {"$sort": {"_id": 1}}
+    ]
+    resource_counts = list(coll.aggregate(pipeline))
+    
+    # Format resource breakdown
+    breakdown = {}
+    for item in resource_counts:
+        breakdown[item["_id"]] = item["count"]
+    
+    return {
+        "tenant": tenant_key,
+        "total_documents": total_documents,
+        "resource_breakdown": breakdown
+    }
+
 # ========== APPLICATION API ==========
 
 @app.get("/inspect/distinctResourceTypes", tags=["Application API"], summary="List all resource types")
@@ -176,7 +219,6 @@ def sample_local_id():
     """
     coll = get_collection()
     doc = coll.find_one({"tenant": settings.tenant, "resourceType":"Patient", "search.local_id": {"$exists": True}}, {"search.local_id":1})
-    return {"local_id": None}
     return {"local_id": (doc or {}).get("search",{}).get("local_id")}
 
 
@@ -666,7 +708,7 @@ def spec_cpi_cases_by_mo(
     Supports both GET and POST methods as per customer specification.
     Returns data in format: {"data": [...], "count": N}
 
-    Parameters match MDM_PI_cpi_case specification (legacy: MDM_HPI_cpi_case).
+    Parameters match MDM_PI_cpi_case specification (custom: MDM_HPI_cpi_case).
     Default statusCode is "AC" as per spec.
     Default caseType is ["I","A"] if not specified.
     """

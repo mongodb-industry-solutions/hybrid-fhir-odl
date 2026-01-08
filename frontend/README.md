@@ -24,7 +24,7 @@ A Next.js web application for managing FHIR (Fast Healthcare Interoperability Re
 2. **Configure environment** (already done in `.env.local`):
    ```env
    NEXT_PUBLIC_ENABLE_FHIR=true
-   NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+   BACKEND_URL=http://localhost:8000
    ```
 
 3. **Start the backend** (in another terminal):
@@ -122,7 +122,7 @@ Edit `app/globals.css` to customize the color scheme:
 ### Backend URL
 Change in `.env.local`:
 ```env
-NEXT_PUBLIC_BACKEND_URL=http://your-backend:8000
+BACKEND_URL=http://your-backend:8000
 ```
 
 ## Development
@@ -146,7 +146,7 @@ npm start
 ### Environment Variables
 Set these in production:
 - `NEXT_PUBLIC_ENABLE_FHIR=true`
-- `NEXT_PUBLIC_BACKEND_URL=https://your-backend-api.com`
+- `BACKEND_URL=https://your-backend-api.com`
 
 ## Troubleshooting
 

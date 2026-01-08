@@ -20,7 +20,7 @@ services:
     ports:
       - "3101:3101"
     environment:
-      - NEXT_PUBLIC_BACKEND_URL=http://backend:3100
+      - BACKEND_URL=http://backend:3100
     depends_on:
       - backend
     restart: always

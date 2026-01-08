@@ -2,7 +2,7 @@ env:
   NODE_ENV: prod
   # AWS region for IRSA (no credentials needed)
   AWS_REGION: us-east-1
-  NEXT_PUBLIC_BACKEND_URL: http://hybrid-fhir-odl-backend-prod-web-app:80
+  BACKEND_URL: http://hybrid-fhir-odl-backend-prod-web-app:80
   NEXT_PUBLIC_ENABLE_FHIR: "true"
 
 ## Single Pod Containers

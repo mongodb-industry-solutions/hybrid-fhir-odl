@@ -42,9 +42,9 @@ ROWS: List[Dict[str, str]] = [
     row("Patient", "sex", "Administrative sex", "FHIR_CORE", "Patient", "Patient.gender", "Map {M,F,U} ↔ {male,female,unknown}", "Yes", "Patient.gender"),
     row("Patient", "name", "Official name (English)", "FHIR_CORE", "Patient", "Patient.name[0]", "Prefer name.text else combine given/family", "", "Patient.name"),
     row("Patient", "chiName", "Official name (Chinese)", "FHIR_CORE", "Patient", "Patient.name[language=zh]", "Pick first name entry tagged zh"),
-    row("Patient", "patientName", "Legacy display name", "APP", "Application", "app.patientName", "Copy of English name for CPI snapshots"),
+    row("Patient", "patientName", "Custom display name", "APP", "Application", "app.patientName", "Copy of English name for CPI snapshots"),
     row("Patient", "accessCode", "Access permission code", "APP", "Application", "app.accessCode", "Stored only in application bucket"),
-    row("Patient", "deathIndicator", "Legacy death flag", "APP", "Application", "app.deathIndicator", "String (Y/N) derived from Patient.deceased*"),
+    row("Patient", "deathIndicator", "Custom death flag", "APP", "Application", "app.deathIndicator", "String (Y/N) derived from Patient.deceased*"),
 
     row("Patient", "medicalRecNum[]", "MRNs per hospital", "FHIR_CORE", "Patient", "Patient.identifier(system=\"mrn:{hosp}\")", "Split identifiers with mrn: prefix; emit {hospCode,mrn}", "Yes", "Patient.identifier"),
     row("Patient", "hospitalData[]", "Snapshot MRN list", "APP", "Application", "app.hospitalData[]", "Augment MRNs with `_id` + patientKey for CPI payloads"),
@@ -62,13 +62,13 @@ ROWS: List[Dict[str, str]] = [
     row("Patient", "exactDobFlag", "DOB precision flag", "APP", "Application", "app.exactDobFlag", "Boolean indicator only stored in app bucket"),
     row("Patient", "lastPayCode", "Last payment/entitlement code", "APP", "Application", "app.lastPayCode", "Stored in app until Coverage resource available"),
     row("Patient", "otherDocNum", "Other document number", "FHIR_CORE", "Patient", "Patient.identifier(system=\"doc:other\")", "Pull identifier or fall back to app.otherDocNum"),
-    row("Patient", "ccCodes[]", "Legacy CC code list", "APP", "Application", "app.ccCodes", "Array of ints stored solely in app bucket"),
+    row("Patient", "ccCodes[]", "Custom CC code list", "APP", "Application", "app.ccCodes", "Array of ints stored solely in app bucket"),
     row("Patient", "hospCode", "Managing hospital", "FHIR_CORE", "Patient", "Patient.managingOrganization.reference", "Reference Organization/{code}; mirror to search.hospCode", "Yes", "Patient.organization"),
     row("Patient", "last_update_datetime", "Last update timestamp", "FHIR_CORE", "Patient", "Patient.meta.lastUpdated", "ISO timestamp from meta.lastUpdated"),
-    row("Patient", "lastUpdateDatetime", "Legacy camelCase timestamp", "APP", "Application", "app.lastUpdateDatetime", "Copy of meta.lastUpdated for CPI payloads"),
+    row("Patient", "lastUpdateDatetime", "Custom camelCase timestamp", "APP", "Application", "app.lastUpdateDatetime", "Copy of meta.lastUpdated for CPI payloads"),
     # PMI Encounter
     row("PMI Encounter", "_id", "Mongo envelope identifier", "APP", "Envelope", "app._id", "Stringified ObjectId from MongoDB"),
-    row("PMI Encounter", "caseNum", "Encounter case number", "FHIR_CORE", "Encounter", "Encounter.identifier(system=\"caseNum\")", "Use identifier token with legacy system", "Yes", "Encounter.identifier"),
+    row("PMI Encounter", "caseNum", "Encounter case number", "FHIR_CORE", "Encounter", "Encounter.identifier(system=\"caseNum\")", "Use identifier token with custom system", "Yes", "Encounter.identifier"),
     row("PMI Encounter", "hospCode", "Hospital code", "FHIR_CORE", "Encounter", "Encounter.serviceProvider.reference", "Reference Organization/{code}; mirror to search.hospCode", "Yes", "Encounter.service-provider"),
     row("PMI Encounter", "admissionDate", "Admission datetime", "FHIR_CORE", "Encounter", "Encounter.period.start", "Direct copy from period.start", "Yes", "Encounter.date"),
     row("PMI Encounter", "dischargeDate", "Discharge datetime", "FHIR_CORE", "Encounter", "Encounter.period.end", "Direct copy from period.end", "Yes", "Encounter.date"),
@@ -87,7 +87,7 @@ ROWS: List[Dict[str, str]] = [
     row("PMI Encounter", "patient.*", "Embedded patient snapshot", "APP", "Application", "app.patientSnapshot", "Materialized via build_patient_payload per Encounter"),
     # CPI Encounter
     row("CPI Encounter", "_id", "Mongo envelope identifier", "APP", "Envelope", "app._id", "Stringified ObjectId from MongoDB"),
-    row("CPI Encounter", "caseNum", "Encounter case number", "FHIR_CORE", "Encounter", "Encounter.identifier(system=\"caseNum\")", "Use identifier token with legacy system", "Yes", "Encounter.identifier"),
+    row("CPI Encounter", "caseNum", "Encounter case number", "FHIR_CORE", "Encounter", "Encounter.identifier(system=\"caseNum\")", "Use identifier token with custom system", "Yes", "Encounter.identifier"),
     row("CPI Encounter", "hospCode", "Hospital code", "FHIR_CORE", "Encounter", "Encounter.serviceProvider.reference", "Reference Organization/{code}; mirror to search.hospCode", "Yes", "Encounter.service-provider"),
     row("CPI Encounter", "admissionDate", "Admission datetime", "FHIR_CORE", "Encounter", "Encounter.period.start", "Direct copy from period.start", "Yes", "Encounter.date"),
     row("CPI Encounter", "caseType", "Case type (IP/OP/ER)", "FHIR_CORE", "Encounter", "Encounter.class.code", "Translate class.code ↔ spec caseType", "Yes", "Encounter.class"),
@@ -170,7 +170,7 @@ def write_markdown() -> None:
             "> Multi-cardinality FHIR elements follow the standard ordering:",
             "> `Patient.name[0]` / `[1]` for EN / ZH, `Patient.address[0]` / `[1]` for EN / ZH, and `Patient.telecom` entries are keyed by `use`.",
             ">",
-            "> Set `ENABLE_FHIR_DENORMALIZATION=false` to disable the optional FHIR search mirrors (name, gender, DOB, encounter period). Customer-specific fields remain denormalized so the legacy APIs retain their current performance.",
+            "> Set `ENABLE_FHIR_DENORMALIZATION=false` to disable the optional FHIR search mirrors (name, gender, DOB, encounter period). Customer-specific fields remain denormalized so the custom APIs retain their current performance.",
         ]
     )
     content = "\n".join(lines) + "\n"

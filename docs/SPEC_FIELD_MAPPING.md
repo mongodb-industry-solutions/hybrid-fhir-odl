@@ -15,9 +15,9 @@ Bucket legend: `FHIR_CORE` (native resource fields), `APP` (application-only), `
 | Patient | sex | Administrative sex | FHIR_CORE | Patient | Patient.gender | Map {M,F,U} ↔ {male,female,unknown} | Yes | Patient.gender |
 | Patient | name | Official name (English) | FHIR_CORE | Patient | Patient.name[0] | Prefer name.text else combine given/family |  | Patient.name |
 | Patient | chiName | Official name (Chinese) | FHIR_CORE | Patient | Patient.name[language=zh] | Pick first name entry tagged zh | No |  |
-| Patient | patientName | Legacy display name | APP | Application | app.patientName | Copy of English name for CPI snapshots | No |  |
+| Patient | patientName | Custom display name | APP | Application | app.patientName | Copy of English name for CPI snapshots | No |  |
 | Patient | accessCode | Access permission code | APP | Application | app.accessCode | Stored only in application bucket | No |  |
-| Patient | deathIndicator | Legacy death flag | APP | Application | app.deathIndicator | String (Y/N) derived from Patient.deceased* | No |  |
+| Patient | deathIndicator | Custom death flag | APP | Application | app.deathIndicator | String (Y/N) derived from Patient.deceased* | No |  |
 | Patient | hkid | HKID identifier | FHIR_CORE | Patient | Patient.identifier(system="hkid") | Identifier token; mirror to search.hkid | Yes | Patient.identifier |
 | Patient | medicalRecNum[] | MRNs per hospital | FHIR_CORE | Patient | Patient.identifier(system="mrn:{hosp}") | Split identifiers with mrn: prefix; emit {hospCode,mrn} | Yes | Patient.identifier |
 | Patient | hospitalData[] | Snapshot MRN list | APP | Application | app.hospitalData[] | Augment MRNs with `_id` + patientKey for CPI payloads | No |  |
@@ -35,12 +35,12 @@ Bucket legend: `FHIR_CORE` (native resource fields), `APP` (application-only), `
 | Patient | exactDobFlag | DOB precision flag | APP | Application | app.exactDobFlag | Boolean indicator only stored in app bucket | No |  |
 | Patient | lastPayCode | Last payment/entitlement code | APP | Application | app.lastPayCode | Stored in app until Coverage resource available | No |  |
 | Patient | otherDocNum | Other document number | FHIR_CORE | Patient | Patient.identifier(system="doc:other") | Pull identifier or fall back to app.otherDocNum | No |  |
-| Patient | ccCodes[] | Legacy CC code list | APP | Application | app.ccCodes | Array of ints stored solely in app bucket | No |  |
+| Patient | ccCodes[] | Custom CC code list | APP | Application | app.ccCodes | Array of ints stored solely in app bucket | No |  |
 | Patient | hospCode | Managing hospital | FHIR_CORE | Patient | Patient.managingOrganization.reference | Reference Organization/{code}; mirror to search.hospCode | Yes | Patient.organization |
 | Patient | last_update_datetime | Last update timestamp | FHIR_CORE | Patient | Patient.meta.lastUpdated | ISO timestamp from meta.lastUpdated | No |  |
-| Patient | lastUpdateDatetime | Legacy camelCase timestamp | APP | Application | app.lastUpdateDatetime | Copy of meta.lastUpdated for CPI payloads | No |  |
+| Patient | lastUpdateDatetime | Custom camelCase timestamp | APP | Application | app.lastUpdateDatetime | Copy of meta.lastUpdated for CPI payloads | No |  |
 | PMI Encounter | _id | Mongo envelope identifier | APP | Envelope | app._id | Stringified ObjectId from MongoDB | No |  |
-| PMI Encounter | caseNum | Encounter case number | FHIR_CORE | Encounter | Encounter.identifier(system="caseNum") | Use identifier token with legacy system | Yes | Encounter.identifier |
+| PMI Encounter | caseNum | Encounter case number | FHIR_CORE | Encounter | Encounter.identifier(system="caseNum") | Use identifier token with custom system | Yes | Encounter.identifier |
 | PMI Encounter | hospCode | Hospital code | FHIR_CORE | Encounter | Encounter.serviceProvider.reference | Reference Organization/{code}; mirror to search.hospCode | Yes | Encounter.service-provider |
 | PMI Encounter | admissionDate | Admission datetime | FHIR_CORE | Encounter | Encounter.period.start | Direct copy from period.start | Yes | Encounter.date |
 | PMI Encounter | dischargeDate | Discharge datetime | FHIR_CORE | Encounter | Encounter.period.end | Direct copy from period.end | Yes | Encounter.date |
@@ -58,7 +58,7 @@ Bucket legend: `FHIR_CORE` (native resource fields), `APP` (application-only), `
 | PMI Encounter | patientGroup | Patient group code | APP | Application | app.patientGroup | Stored only in app bucket | No |  |
 | PMI Encounter | patient.* | Embedded patient snapshot | APP | Application | app.patientSnapshot | Materialized via build_patient_payload per Encounter | No |  |
 | CPI Encounter | _id | Mongo envelope identifier | APP | Envelope | app._id | Stringified ObjectId from MongoDB | No |  |
-| CPI Encounter | caseNum | Encounter case number | FHIR_CORE | Encounter | Encounter.identifier(system="caseNum") | Use identifier token with legacy system | Yes | Encounter.identifier |
+| CPI Encounter | caseNum | Encounter case number | FHIR_CORE | Encounter | Encounter.identifier(system="caseNum") | Use identifier token with custom system | Yes | Encounter.identifier |
 | CPI Encounter | hospCode | Hospital code | FHIR_CORE | Encounter | Encounter.serviceProvider.reference | Reference Organization/{code}; mirror to search.hospCode | Yes | Encounter.service-provider |
 | CPI Encounter | admissionDate | Admission datetime | FHIR_CORE | Encounter | Encounter.period.start | Direct copy from period.start | Yes | Encounter.date |
 | CPI Encounter | caseType | Case type (IP/OP/ER) | FHIR_CORE | Encounter | Encounter.class.code | Translate class.code ↔ spec caseType | Yes | Encounter.class |
@@ -87,4 +87,4 @@ Bucket legend: `FHIR_CORE` (native resource fields), `APP` (application-only), `
 > Multi-cardinality FHIR elements follow the standard ordering:
 > `Patient.name[0]` / `[1]` for EN / ZH, `Patient.address[0]` / `[1]` for EN / ZH, and `Patient.telecom` entries are keyed by `use`.
 >
-> Set `ENABLE_FHIR_DENORMALIZATION=false` to disable the optional FHIR search mirrors (name, gender, DOB, encounter period). Customer-specific fields remain denormalized so the legacy APIs retain their current performance.
+> Set `ENABLE_FHIR_DENORMALIZATION=false` to disable the optional FHIR search mirrors (name, gender, DOB, encounter period). Customer-specific fields remain denormalized so the custom APIs retain their current performance.

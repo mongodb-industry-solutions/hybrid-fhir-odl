@@ -60,7 +60,7 @@ fhir-tool --help
 ## Indexes created
 - Unique: `{ tenant:1, resourceType:1, "resource.id":1 }`
 - Patient by Local ID: `{ tenant:1, resourceType:1, "search.local_id":1 }`
-- Patient by HKID (legacy): Removed - use Local ID instead
+- Patient by HKID (custom): Removed - use Local ID instead
 - Encounters by patientKey/time: `{ tenant:1, resourceType:1, "search.patientKey":1, "search.start":-1 }`
 - Team filter: `{ tenant:1, resourceType:1, "search.teamCode":1, "search.statusCode":1 }`
 - Doctor filter: `{ tenant:1, resourceType:1, "search.doctorCode":1, "search.caseType":1 }`

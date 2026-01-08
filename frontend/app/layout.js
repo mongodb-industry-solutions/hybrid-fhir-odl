@@ -1,8 +1,8 @@
 import './globals.css'
 
 export const metadata = {
-  title: 'MongoDB Healthcare Data Lab - FHIR Data Management Platform',
-  description: 'FHIR Data Management Platform - MongoDB Healthcare Data Lab for clinical data integration and interoperability',
+  title: 'MongoDB Hybrid FHIR ODL',
+  description: "MongoDB's proposed hybrid Operational Data Layer (ODL) for FHIR-based healthcare data integration and interoperability",
 };
 
 export default function RootLayout({ children }) {
