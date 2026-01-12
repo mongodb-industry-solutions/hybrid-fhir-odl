@@ -16,7 +16,7 @@ export default function FhirResourceBrowser() {
   useEffect(() => {
     fetch(API("/inspect/distinctResourceTypes"))
       .then(r => r.json())
-      .then(d => { setResourceTypes(d.resourceTypes || []); setResourceType(d.resourceTypes?.[0] || ""); });
+      .then(d => { setResourceTypes(d.resourceTypes || []); setResourceType("Patient"); });
   }, []);
 
   const fetchList = async () => {
