@@ -103,7 +103,6 @@ function Field({ def, value, onChange, sampleValues }) {
 
 export default function FhirApiTester() {
   const [resource, setResource] = useState("Patient");
-  const [mode, setMode] = useState("accelerated");
   const [cfg, setCfg] = useState(null);
   const [sampleValues, setSampleValues] = useState(null);
   const [form, setForm] = useState({});
@@ -113,7 +112,7 @@ export default function FhirApiTester() {
   const [filterJson, setFilterJson] = useState("");
   const [elapsed, setElapsed] = useState(0);
   const [count, setCount] = useState(0);
-  const [paramsExpanded, setParamsExpanded] = useState(true);
+  const [paramsExpanded, setParamsExpanded] = useState(false);
   const resultsRef = useRef(null);
 
   useEffect(() => {
@@ -360,7 +359,7 @@ export default function FhirApiTester() {
     const res = await fetch(url, {
       headers: {
         "x-debug-filter": "true",
-        "x-search-mode": mode
+        "x-search-mode": "accelerated"
       }
     });
     const t1 = performance.now();
@@ -410,7 +409,7 @@ export default function FhirApiTester() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="text-xs text-slate-400 mb-1 block">Resource Type</label>
             <select
@@ -421,24 +420,6 @@ export default function FhirApiTester() {
               <option>Patient</option>
               <option>Encounter</option>
             </select>
-          </div>
-
-          <div>
-            <label className="text-xs text-slate-400 mb-1 block">Search Mode</label>
-            <div className="flex gap-2">
-              <button
-                className={`flex-1 px-3 py-2 rounded transition-all ${mode==="accelerated"?"bg-emerald-600 text-white ring-2 ring-emerald-400":"bg-slate-700 text-slate-200 hover:bg-slate-600"}`}
-                onClick={()=>setMode("accelerated")}
-              >
-                ⚡ Accelerated
-              </button>
-              <button
-                className={`flex-1 px-3 py-2 rounded transition-all ${mode==="canonical"?"bg-blue-600 text-white ring-2 ring-blue-400":"bg-slate-700 text-slate-200 hover:bg-slate-600"}`}
-                onClick={()=>setMode("canonical")}
-              >
-                📋 Canonical
-              </button>
-            </div>
           </div>
 
           <div>
@@ -457,15 +438,59 @@ export default function FhirApiTester() {
           </div>
         </div>
       </div>
+     {/* Custom Search Parameters Section */}
+      <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-700/40 rounded-lg p-4">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+          <h4 className="text-xl font-bold bg-gradient-to-r from-blue-300 to-indigo-300 bg-clip-text text-transparent">
+            🔧 Custom Query Builder
+          </h4>
+          <div className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></div>
+        </div>
+        <div className="text-sm text-slate-300 mb-4">
+          Need precise control? Build your own custom FHIR search with specific parameters below.
+        </div>
+        
+        {/* Parameters dropdown */}
+        <div className="bg-slate-800/50 border border-slate-600/50 rounded p-3">
+          <button
+            onClick={() => setParamsExpanded(!paramsExpanded)}
+            className="flex items-center gap-2 text-slate-200 font-medium mb-2 hover:text-emerald-400 transition-colors w-full"
+          >
+            {paramsExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            <span>{resource} search parameters</span>
+            <span className="text-xs text-slate-500">({cfg?.params?.length || 0} fields)</span>
+          </button>
+          {paramsExpanded && (
+            <>
+              <div className="space-y-2">
+                {cfg?.params?.map((p) => (
+                  <div key={p.name}>
+                    <div className="text-xs text-slate-400 mb-1">{p.name}{p.help ? ` — ${p.help}`: ""}</div>
+                    <Field def={p} value={form[p.name]} onChange={(v)=>setParam(p.name, v)} sampleValues={sampleValues} />
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3 pt-3 border-t border-slate-700">
+                <div className="text-xs text-slate-400 mb-2">Manual search available below. Or use examples above for instant results!</div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
 
       {/* Quick Examples - Prominent at Top */}
       {smartPresets.categories?.length > 0 && (
-        <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
+        <div className="bg-gradient-to-r from-emerald-900/30 to-blue-900/30 border border-emerald-700/40 rounded-lg p-4">
           <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Sparkles className="text-yellow-400" size={18} />
-              <h4 className="text-slate-200 font-semibold">Try These Examples</h4>
-              <span className="text-xs text-slate-400">(Click any button to run)</span>
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+              <h4 className="text-xl font-bold bg-gradient-to-r from-emerald-300 to-blue-300 bg-clip-text text-transparent flex items-center gap-2">
+                {/* <Sparkles className="text-blue-400" size={20} /> */}
+                ⚡ Quick testing? Try these examples
+              </h4>
+              <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+              <span className="text-sm text-slate-300">(Click any button to run)</span>
             </div>
             <button
               className="px-4 py-2 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-medium flex items-center gap-2 transition-all"
@@ -516,31 +541,6 @@ export default function FhirApiTester() {
         </div>
       )}
 
-      <div className="bg-slate-800 border border-slate-700 rounded p-3">
-        <button
-          onClick={() => setParamsExpanded(!paramsExpanded)}
-          className="flex items-center gap-2 text-slate-200 font-medium mb-2 hover:text-emerald-400 transition-colors w-full"
-        >
-          {paramsExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-          <span>{resource} search parameters</span>
-          <span className="text-xs text-slate-500">({cfg?.params?.length || 0} fields)</span>
-        </button>
-        {paramsExpanded && (
-          <>
-            <div className="space-y-2">
-              {cfg?.params?.map((p) => (
-                <div key={p.name}>
-                  <div className="text-xs text-slate-400 mb-1">{p.name}{p.help ? ` — ${p.help}`: ""}</div>
-                  <Field def={p} value={form[p.name]} onChange={(v)=>setParam(p.name, v)} sampleValues={sampleValues} />
-                </div>
-              ))}
-            </div>
-            <div className="mt-3 pt-3 border-t border-slate-700">
-              <div className="text-xs text-slate-400 mb-2">Manual search available below. Or use examples above for instant results!</div>
-            </div>
-          </>
-        )}
-      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" ref={resultsRef}>
         <div className="bg-slate-800 border border-slate-700 rounded p-2">
