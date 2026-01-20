@@ -101,10 +101,11 @@ function Field({ def, value, onChange, sampleValues }) {
   );
 }
 
-export default function FhirApiTester() {
+export default function FhirApiTester({ onTabChange }) {
   const [resource, setResource] = useState("Patient");
   const [cfg, setCfg] = useState(null);
   const [sampleValues, setSampleValues] = useState(null);
+  const [hasData, setHasData] = useState(null); // null = loading, true/false = data status
   const [form, setForm] = useState({});
   const [url, setUrl] = useState("");
   const [sending, setSending] = useState(false);
@@ -123,8 +124,14 @@ export default function FhirApiTester() {
           fetch(`${BACKEND_PATH}/inspect/sample-values/${resource}`)
         ]);
         if (configRes.ok) setCfg(await configRes.json());
-        if (samplesRes.ok) setSampleValues(await samplesRes.json());
-      } catch (e) { console.error(e); }
+        if (samplesRes.ok) {
+          const samples = await samplesRes.json();
+          setSampleValues(samples);
+          setHasData(samples.hasData || false);
+        } else {
+          setHasData(false);
+        }
+      } catch (e) { console.error(e); setHasData(false); }
     };
     load();
     setForm({});
@@ -438,6 +445,36 @@ export default function FhirApiTester() {
           </div>
         </div>
       </div>
+
+      {/* Database Population Notice */}
+      {hasData === false && (
+        <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-700/40 rounded-lg p-4">
+          <div className="flex items-center gap-3 mb-3">
+            <Sparkles className="text-blue-400" size={20} />
+            <h4 className="text-lg font-bold text-blue-300">📊 Please populate the database to see example queries</h4>
+          </div>
+          <div className="text-sm text-slate-300 space-y-2">
+            <p>The FHIR search demonstrator works best with sample data to generate meaningful examples.</p>
+            <div className="bg-slate-800/50 p-3 rounded border border-slate-700">
+              <p className="font-medium text-emerald-400 mb-2">💡 Quick setup:</p>
+              <ol className="list-decimal pl-4 space-y-1 text-sm">
+                <li>Navigate to the 
+                  <button 
+                    onClick={() => onTabChange?.('synthetic')}
+                    className="font-bold text-emerald-400 hover:text-emerald-300 underline decoration-emerald-400 hover:decoration-emerald-300 transition-colors cursor-pointer ml-1"
+                  >
+                    Synthetic Data Creation
+                  </button> tab
+                </li>
+                <li>Generate sample {resource} records</li>
+                <li>Return here to see personalized example queries based on your data</li>
+              </ol>
+            </div>
+            <p className="text-blue-400 text-xs">You can still test manual queries below, though results will be empty until data is added.</p>
+          </div>
+        </div>
+      )}
+
      {/* Custom Search Parameters Section */}
       <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-700/40 rounded-lg p-4">
         <div className="flex items-center gap-3 mb-2">
@@ -479,8 +516,8 @@ export default function FhirApiTester() {
         </div>
       </div>
 
-      {/* Quick Examples - Prominent at Top */}
-      {smartPresets.categories?.length > 0 && (
+      {/* Quick Examples */}
+      {smartPresets.categories?.length > 0 && hasData !== false && (
         <div className="bg-gradient-to-r from-emerald-900/30 to-blue-900/30 border border-emerald-700/40 rounded-lg p-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -540,7 +577,6 @@ export default function FhirApiTester() {
           )}
         </div>
       )}
-
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" ref={resultsRef}>
         <div className="bg-slate-800 border border-slate-700 rounded p-2">

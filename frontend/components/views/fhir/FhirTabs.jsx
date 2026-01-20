@@ -12,10 +12,17 @@ import MappingShowcase from "./MappingShowcase";
 
 export default function FhirTabs() {
   const [enabled, setEnabled] = useState(true);
+  const [activeTab, setActiveTab] = useState("mappings");
+  
   useEffect(() => {
     const flag = process.env.NEXT_PUBLIC_ENABLE_FHIR;
     setEnabled(flag === undefined ? true : flag === "true");
   }, []);
+  
+  const handleTabChange = (tabValue) => {
+    setActiveTab(tabValue);
+  };
+  
   if (!enabled) return null;
   return (
     <div className="p-4 bg-slate-900 rounded-xl border border-slate-800">
@@ -23,7 +30,7 @@ export default function FhirTabs() {
         <Database className="text-blue-400" size={18} />
         <h2 className="text-slate-200 font-semibold">Hybrid FHIR ODL</h2>
       </div>
-      <Tabs defaultValue="mappings" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="bg-slate-800">
           <TabsTrigger value="mappings" className="data-[state=active]:bg-slate-700">
             <GitCompare className="mr-2" size={14} /> Mappings
@@ -47,8 +54,8 @@ export default function FhirTabs() {
         <TabsContent value="mappings"><MappingShowcase /></TabsContent>
         <TabsContent value="synthetic"><FhirSyntheticPanel /></TabsContent>
         <TabsContent value="resources"><FhirResourceBrowser /></TabsContent>
-        <TabsContent value="customer"><CustomerTabs /></TabsContent>
-        <TabsContent value="fhir-api"><FhirApiTester /></TabsContent>
+        <TabsContent value="customer"><CustomerTabs onTabChange={handleTabChange} /></TabsContent>
+        <TabsContent value="fhir-api"><FhirApiTester onTabChange={handleTabChange} /></TabsContent>
         <TabsContent value="docs"><FhirApiDocs /></TabsContent>
       </Tabs>
     </div>

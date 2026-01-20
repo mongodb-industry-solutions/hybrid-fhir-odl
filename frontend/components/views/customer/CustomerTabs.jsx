@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Briefcase, ServerCog, BookOpen } from "lucide-react";
 import CustomerApiTester from "./CustomerApiTester";
 
-export default function CustomerTabs() {
+export default function CustomerTabs({ onTabChange }) {
   return (
     <div className="p-4 bg-slate-900 rounded-xl border border-purple-800/30">
       <div className="flex items-center gap-2 mb-3">
@@ -22,7 +22,7 @@ export default function CustomerTabs() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="api-tester">
-          <CustomerApiTester />
+          <CustomerApiTester onTabChange={onTabChange} />
         </TabsContent>
         <TabsContent value="documentation">
           <CustomerApiDocumentation />

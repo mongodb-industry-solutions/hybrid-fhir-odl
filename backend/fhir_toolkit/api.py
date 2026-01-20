@@ -218,8 +218,17 @@ def sample_local_id():
     Useful for testing and discovering valid Local ID values in the system.
     """
     coll = get_collection()
+    
+    # Check if there's any patient data at all
+    total_count = coll.count_documents({"tenant": settings.tenant, "resourceType": "Patient"})
+    has_data = total_count > 0
+    
     doc = coll.find_one({"tenant": settings.tenant, "resourceType":"Patient", "search.local_id": {"$exists": True}}, {"search.local_id":1})
-    return {"local_id": (doc or {}).get("search",{}).get("local_id")}
+    return {
+        "local_id": (doc or {}).get("search",{}).get("local_id"),
+        "hasData": has_data,
+        "totalCount": total_count
+    }
 
 
 @app.get("/inspect/resources", tags=["Application API"], summary="Search and list resources")
@@ -283,6 +292,11 @@ def get_sample_values(rtype: str, limit: int = 5):
     """
     coll = get_collection()
     result = {}
+    
+    # Check if there's any data at all for this resource type
+    total_count = coll.count_documents({"tenant": settings.tenant, "resourceType": rtype})
+    result["hasData"] = total_count > 0
+    result["totalCount"] = total_count
 
     if rtype == "Patient":
         # Get sample Local IDs
