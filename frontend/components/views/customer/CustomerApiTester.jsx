@@ -129,7 +129,7 @@ function ParamField({ param, value, onChange }) {
   );
 }
 
-export default function CustomerApiTester() {
+export default function CustomerApiTester({ onTabChange }) {
   const [selectedEndpoint, setSelectedEndpoint] = useState("PATIENT_BY_LOCAL_ID");
   const [method, setMethod] = useState("GET");
   const [params, setParams] = useState({});
@@ -137,6 +137,7 @@ export default function CustomerApiTester() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sampleValues, setSampleValues] = useState({});
+  const [hasData, setHasData] = useState(null); // null = loading, true/false = data status
   const [paramsExpanded, setParamsExpanded] = useState(true);
 
   const currentEndpoint = API_ENDPOINTS[selectedEndpoint];
@@ -148,8 +149,13 @@ export default function CustomerApiTester() {
         const res = await fetch(`${BACKEND_PATH}/inspect/sample-local-id`);
         const data = await res.json();
         setSampleValues(data);
+        // Update hasData based on sample-local-id response too
+        if (data.hasData !== undefined) {
+          setHasData(data.hasData);
+        }
       } catch (err) {
         console.error("Failed to fetch sample values:", err);
+        setHasData(false);
       }
     };
     fetchSamples();
@@ -162,8 +168,11 @@ export default function CustomerApiTester() {
         const encounterRes = await fetch(`${BACKEND_PATH}/inspect/sample-values/Encounter?limit=5`);
         const encounterData = await encounterRes.json();
         setSampleValues(prev => ({ ...prev, ...encounterData }));
+        // Check if we have any data at all
+        setHasData(encounterData.hasData || false);
       } catch (err) {
         console.error("Failed to fetch encounter sample values:", err);
+        setHasData(false);
       }
     };
     fetchSampleData();
@@ -255,6 +264,35 @@ export default function CustomerApiTester() {
           Test the customer specification-compliant APIs for Patient and Case Management
         </p>
       </div>
+
+      {/* Database Population Notice */}
+      {hasData === false && (
+        <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-700/40 rounded-lg p-4">
+          <div className="flex items-center gap-3 mb-3">
+            <Database className="text-blue-400" size={20} />
+            <h4 className="text-lg font-bold text-blue-300">📊 Please populate the database before testing the API</h4>
+          </div>
+          <div className="text-sm text-slate-300 space-y-2">
+            <p>To test the Customer API endpoints, we need some sample data in the database.</p>
+            <div className="bg-slate-800/50 p-3 rounded border border-slate-700">
+              <p className="font-medium text-emerald-400 mb-2">💡 Getting started is easy:</p>
+              <ol className="list-decimal pl-4 space-y-1 text-sm">
+                <li>Navigate to the 
+                  <button 
+                    onClick={() => onTabChange?.('synthetic')}
+                    className="font-bold text-emerald-400 hover:text-emerald-300 underline decoration-emerald-400 hover:decoration-emerald-300 transition-colors cursor-pointer ml-1"
+                  >
+                    Synthetic Data Creation
+                  </button> tab
+                </li>
+                <li>Generate sample Patient and Encounter records</li>
+                <li>Return here to test the Customer APIs with real data</li>
+              </ol>
+            </div>
+            <p className="text-blue-400 text-xs">The APIs will return meaningful results once data is available.</p>
+          </div>
+        </div>
+      )}
 
       {/* Endpoint Selection */}
       <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
@@ -355,11 +393,11 @@ export default function CustomerApiTester() {
       <div className="flex gap-2">
         <button
           onClick={handleExecute}
-          disabled={loading}
+          disabled={loading || hasData === false}
           className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Play size={16} />
-          {loading ? "Executing..." : "Execute Request"}
+          {loading ? "Executing..." : hasData === false ? "Add Data First" : "Execute Request"}
         </button>
         <button
           onClick={handleReset}

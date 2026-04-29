@@ -4,6 +4,14 @@ env:
   BACKEND_URL: http://hybrid-fhir-odl-backend-web-app:80  # or http://localhost:8000 if multicontainer pod is setup and backend is running on 8000
   NEXT_PUBLIC_ENABLE_FHIR: "true"
 
+# Kanopy security and ownership (requires web-app chart v4.30.0+) 
+security: 
+  dataClassification: "Internal" 
+  dataDesignation: ["MI"]
+ 
+ownership: 
+   driEmail: paty.renartcarnicero@mongodb.com
+
 ## Single Pod Containers
 envSecrets:
   # MongoDB Configuration

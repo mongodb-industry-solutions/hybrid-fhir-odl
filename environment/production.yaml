@@ -12,6 +12,15 @@ envSecrets:
   MONGODB_DB: hybrid-fhir-odl-secret 
   MONGODB_COLLECTION: hybrid-fhir-odl-secret 
   MONGODB_TENANT: hybrid-fhir-odl-secret
+
+
+# Kanopy security and ownership (requires web-app chart v4.30.0+) 
+security: 
+  dataClassification: "Internal" 
+  dataDesignation: ["MI"]
+ 
+ownership: 
+   driEmail: paty.renartcarnicero@mongodb.com
   
 ## should be used in case of multi-pod container i.e: both frontend and backend in one pod
 # sidecarContainers:
