@@ -403,4 +403,4 @@ This demonstration showcases a reference pattern for modern healthcare data infr
 
 
 
-## 🚑 Experience the Hybrid FHIR ODL Today!
+## Experience the Hybrid FHIR ODL Today!
