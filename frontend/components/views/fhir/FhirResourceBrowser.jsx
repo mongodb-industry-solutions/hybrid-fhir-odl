@@ -1,6 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Search, RefreshCw, Eye } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { Search, RefreshCw, Eye, X } from "lucide-react";
 import JsonEditor from "./JsonEditor";
 const API = (path) => `/api/internal${path.startsWith("/") ? path : `/${path}`}`;
 export default function FhirResourceBrowser() {
@@ -12,6 +12,16 @@ export default function FhirResourceBrowser() {
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [selected, setSelected] = useState(null);
+  const selectedRef = useRef(null);
+  const topRef = useRef(null);
+
+  useEffect(() => {
+    if (selected && selectedRef.current) {
+      setTimeout(() => {
+        selectedRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 100);
+    }
+  }, [selected]);
 
   useEffect(() => {
     fetch(API("/inspect/distinctResourceTypes"))
@@ -19,10 +29,11 @@ export default function FhirResourceBrowser() {
       .then(d => { setResourceTypes(d.resourceTypes || []); setResourceType("Patient"); });
   }, []);
 
-  const fetchList = async () => {
+  const fetchList = async (queryOverride) => {
     const params = new URLSearchParams();
     if (resourceType) params.set("resourceType", resourceType);
-    if (query) params.set("q", query);
+    const q = queryOverride !== undefined ? queryOverride : query;
+    if (q) params.set("q", q);
     params.set("page", String(page));
     params.set("limit", String(limit));
     const res = await fetch(API(`/inspect/resources?${params.toString()}`));
@@ -34,7 +45,7 @@ export default function FhirResourceBrowser() {
   useEffect(() => { if (resourceType) fetchList(); }, [resourceType, page, limit]);
 
   return (
-    <div className="space-y-4">
+    <div ref={topRef} className="space-y-4">
       <div className="flex flex-wrap gap-3 items-end">
         <div>
           <label className="block text-xs text-slate-400 mb-1">Resource Type</label>
@@ -48,11 +59,11 @@ export default function FhirResourceBrowser() {
           <div className="flex gap-2">
             <input className="flex-1 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-slate-200"
               placeholder="e.g. A123456(7) or C-000123" value={query} onChange={(e)=>setQuery(e.target.value)} />
-            <button onClick={()=>{ setPage(1); fetchList(); }} className="px-3 py-1 bg-blue-600 text-white rounded flex items-center gap-1">
+            <button onClick={()=>{ setPage(1); setSelected(null); fetchList(); }} className="px-3 py-1 bg-blue-600 text-white rounded flex items-center gap-1">
               <Search size={14}/> Search
             </button>
-            <button onClick={fetchList} className="px-3 py-1 bg-slate-700 text-slate-200 rounded flex items-center gap-1">
-              <RefreshCw size={14}/> Refresh
+            <button onClick={() => { setQuery(""); setPage(1); setSelected(null); fetchList(""); setTimeout(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, 100); }} className="px-3 py-1 bg-slate-700 text-slate-200 rounded flex items-center gap-1">
+              <RefreshCw size={14}/> Clear Search
             </button>
           </div>
         </div>
@@ -105,7 +116,14 @@ export default function FhirResourceBrowser() {
       </div>
 
       {selected && (
-        <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div ref={selectedRef} className="mt-4 space-y-2">
+          <div className="flex justify-between items-center">
+            <span className="text-slate-400 text-xs">Viewing: {selected.resource?.resourceType} — {selected.resource?.id}</span>
+            <button onClick={() => { setSelected(null); setTimeout(() => { topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }); }, 100); }} className="px-2 py-1 text-xs bg-slate-700 hover:bg-slate-600 text-slate-100 rounded flex items-center gap-1">
+              <X size={14}/> Close
+            </button>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
             <h3 className="text-slate-300 text-sm mb-1">FHIR Resource</h3>
             <JsonEditor value={selected.resource} onChange={()=>{}} height="350px" readOnly />
@@ -113,6 +131,7 @@ export default function FhirResourceBrowser() {
           <div>
             <h3 className="text-slate-300 text-sm mb-1">Envelope (app + search)</h3>
             <JsonEditor value={{app: selected.app, search: selected.search}} onChange={()=>{}} height="350px" readOnly />
+          </div>
           </div>
         </div>
       )}

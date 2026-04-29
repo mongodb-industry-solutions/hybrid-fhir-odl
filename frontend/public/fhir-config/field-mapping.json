@@ -84,7 +84,7 @@
     "FHIR Resource": "Patient",
     "Target Path": "Patient.name[0]",
     "Transformation": "Prefer name.text else combine given/family",
-    "Indexed?": "",
+    "Indexed?": "No",
     "Search Params": "Patient.name"
   },
   {
