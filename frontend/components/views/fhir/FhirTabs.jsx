@@ -52,7 +52,7 @@ export default function FhirTabs() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="mappings"><MappingShowcase /></TabsContent>
-        <TabsContent value="synthetic"><FhirSyntheticPanel /></TabsContent>
+        <TabsContent value="synthetic" className="pt-6"><FhirSyntheticPanel /></TabsContent>
         <TabsContent value="resources"><FhirResourceBrowser /></TabsContent>
         <TabsContent value="customer"><CustomerTabs onTabChange={handleTabChange} /></TabsContent>
         <TabsContent value="fhir-api"><FhirApiTester onTabChange={handleTabChange} /></TabsContent>
