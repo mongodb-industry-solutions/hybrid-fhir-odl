@@ -2,6 +2,14 @@
 
 .PHONY: help install dev build up down logs clean restart backend frontend docker-build docker-up docker-down docker-logs docker-clean
 
+ifeq ($(OS),Windows_NT)
+    VENV_PYTHON = .venv\Scripts\python
+    VENV_PIP    = .venv\Scripts\pip
+else
+    VENV_PYTHON = .venv/bin/python
+    VENV_PIP    = .venv/bin/pip
+endif
+
 # Default target
 help:
 	@echo "Available commands:"
@@ -27,7 +35,7 @@ install: install-backend install-frontend
 install-backend:
 	@echo "Installing backend dependencies..."
 	cd backend && python -m venv .venv
-	cd backend && .venv/Scripts/pip install -e .
+	cd backend && $(VENV_PIP) install -e .
 
 install-frontend:
 	@echo "Installing frontend dependencies..."
@@ -46,7 +54,7 @@ backend:
 	@echo "Starting backend server..."
 	@echo "Backend API: http://localhost:3100"
 	@echo "API Docs: http://localhost:3100/docs"
-	cd backend && .venv/Scripts/python -m uvicorn fhir_toolkit.api:app --host 0.0.0.0 --port 3100 --reload
+	cd backend && $(VENV_PYTHON) -m uvicorn fhir_toolkit.api:app --host 0.0.0.0 --port 3100 --reload
 
 frontend:
 	@echo "Starting frontend server..."
@@ -58,7 +66,7 @@ build: build-backend build-frontend
 
 build-backend:
 	@echo "Building backend..."
-	cd backend && .venv/Scripts/pip install -e .
+	cd backend && $(VENV_PIP) install -e .
 
 build-frontend:
 	@echo "Building frontend..."

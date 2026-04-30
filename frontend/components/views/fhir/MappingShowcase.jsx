@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Layers, Download } from "lucide-react";
+import { Layers, Download, ChevronDown, ChevronRight } from "lucide-react";
 
 const DOMAIN_ORDER = ["Patient", "PMI Encounter", "CPI Encounter"];
 
@@ -19,16 +19,18 @@ const DOMAIN_DESCRIPTIONS = {
   "Practitioner": "This resource represents a FHIR standard Practitioner which models a person who is directly or indirectly involved in the provisioning of healthcare."
 };
 
+const BUCKET_META = {
+  FHIR_CORE: { label: "FHIR Core", active: "bg-emerald-500/20 text-emerald-200 border border-emerald-400/40", inactive: "bg-slate-800 text-slate-500 border border-slate-700" },
+  APP:       { label: "App",       active: "bg-purple-500/20 text-purple-200 border border-purple-400/40",   inactive: "bg-slate-800 text-slate-500 border border-slate-700" },
+  SEARCH:    { label: "Search",    active: "bg-sky-500/20 text-sky-200 border border-sky-400/40",             inactive: "bg-slate-800 text-slate-500 border border-slate-700" },
+};
+
 const bucketBadge = (bucket) => {
   switch (bucket) {
-    case "FHIR_CORE":
-      return "bg-emerald-500/20 text-emerald-200 border border-emerald-400/40";
-    case "APP":
-      return "bg-purple-500/20 text-purple-200 border border-purple-400/40";
-    case "SEARCH":
-      return "bg-sky-500/20 text-sky-200 border border-sky-400/40";
-    default:
-      return "bg-slate-700 text-slate-200";
+    case "FHIR_CORE": return "bg-emerald-500/20 text-emerald-200 border border-emerald-400/40";
+    case "APP":       return "bg-purple-500/20 text-purple-200 border border-purple-400/40";
+    case "SEARCH":    return "bg-sky-500/20 text-sky-200 border border-sky-400/40";
+    default:          return "bg-slate-700 text-slate-200";
   }
 };
 
@@ -48,7 +50,7 @@ function FieldTable({ rows }) {
         </thead>
         <tbody className="divide-y divide-slate-800 text-slate-200">
           {rows.map((row) => (
-            <tr key={`${row.Domain}-${row.Field}`}>
+            <tr key={`${row.Domain}-${row.Field}`} className="hover:bg-slate-800/50 transition-colors">
               <td className="px-3 py-2 font-medium text-slate-100">{row.Field}</td>
               <td className="px-3 py-2">{row.Interpretation}</td>
               <td className="px-3 py-2">
@@ -59,11 +61,7 @@ function FieldTable({ rows }) {
               </td>
               <td className="px-3 py-2 text-slate-300">{row.Transformation || "—"}</td>
               <td className="px-3 py-2">
-                <span
-                  className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                    row["Indexed?"] === "Yes" ? "bg-emerald-500/20 text-emerald-200" : "bg-slate-700 text-slate-200"
-                  }`}
-                >
+                <span className={`px-2 py-1 rounded-full text-xs font-semibold ${row["Indexed?"] === "Yes" ? "bg-emerald-500/20 text-emerald-200" : "bg-slate-700 text-slate-200"}`}>
                   {row["Indexed?"]}
                 </span>
               </td>
@@ -76,8 +74,10 @@ function FieldTable({ rows }) {
 }
 
 export default function MappingShowcase() {
-  const [rows, setRows] = useState([]);
-  const [status, setStatus] = useState({ loading: true, error: "" });
+  const [rows, setRows]               = useState([]);
+  const [status, setStatus]           = useState({ loading: true, error: "" });
+  const [expandedDomains, setExpandedDomains] = useState(new Set());
+  const [activeBuckets, setActiveBuckets]     = useState(new Set(["FHIR_CORE", "APP", "SEARCH"]));
 
   useEffect(() => {
     async function load() {
@@ -98,14 +98,10 @@ export default function MappingShowcase() {
   const grouped = useMemo(() => {
     const groups = new Map();
     for (const item of rows) {
-      if (!groups.has(item.Domain)) {
-        groups.set(item.Domain, []);
-      }
+      if (!groups.has(item.Domain)) groups.set(item.Domain, []);
       groups.get(item.Domain).push(item);
     }
-    for (const arr of groups.values()) {
-      arr.sort((a, b) => a.Field.localeCompare(b.Field));
-    }
+    for (const arr of groups.values()) arr.sort((a, b) => a.Field.localeCompare(b.Field));
     return groups;
   }, [rows]);
 
@@ -113,21 +109,54 @@ export default function MappingShowcase() {
     const seen = new Set();
     const order = [];
     for (const domain of DOMAIN_ORDER) {
-      if (grouped.has(domain)) {
-        order.push(domain);
-        seen.add(domain);
-      }
+      if (grouped.has(domain)) { order.push(domain); seen.add(domain); }
     }
     for (const domain of grouped.keys()) {
-      if (!seen.has(domain)) {
-        order.push(domain);
-      }
+      if (!seen.has(domain)) order.push(domain);
     }
     return order;
   }, [grouped]);
 
+  // Expand all domains once data is available
+  useEffect(() => {
+    if (orderedDomains.length > 0) setExpandedDomains(new Set(orderedDomains));
+  }, [orderedDomains]);
+
+  const filteredGrouped = useMemo(() => {
+    const out = new Map();
+    for (const [domain, domainRows] of grouped) {
+      out.set(domain, domainRows.filter((r) => activeBuckets.has(r.Bucket)));
+    }
+    return out;
+  }, [grouped, activeBuckets]);
+
+  const allExpanded = orderedDomains.length > 0 && orderedDomains.every((d) => expandedDomains.has(d));
+  const isFiltered  = activeBuckets.size < 3;
+
+  const toggleDomain = (domain) => {
+    setExpandedDomains((prev) => {
+      const next = new Set(prev);
+      next.has(domain) ? next.delete(domain) : next.add(domain);
+      return next;
+    });
+  };
+
+  const toggleBucket = (bucket) => {
+    setActiveBuckets((prev) => {
+      if (prev.has(bucket) && prev.size === 1) return prev; // keep at least one active
+      const next = new Set(prev);
+      next.has(bucket) ? next.delete(bucket) : next.add(bucket);
+      return next;
+    });
+  };
+
+  const toggleAll = () => {
+    setExpandedDomains(allExpanded ? new Set() : new Set(orderedDomains));
+  };
+
   return (
     <div className="space-y-6">
+      {/* Header banner */}
       <div className="bg-slate-900 border border-emerald-600/40 rounded-xl p-4 flex flex-wrap items-start gap-4">
         <div className="flex items-start gap-3">
           <Layers className="text-emerald-400 mt-1" size={22} />
@@ -156,83 +185,133 @@ export default function MappingShowcase() {
       </div>
 
       {status.loading && <p className="text-slate-400 text-sm">Loading mapping metadata…</p>}
-      {status.error && <p className="text-rose-400 text-sm">{status.error}</p>}
+      {status.error   && <p className="text-rose-400 text-sm">{status.error}</p>}
 
       {!status.loading && !status.error && (
-        <div className="bg-slate-100 border border-slate-300 rounded-xl overflow-hidden">
-          <div className="bg-slate-200 px-6 py-4 flex items-center gap-3">
-            <Layers size={20} className="text-blue-600" />
-            <h3 className="text-slate-800 font-semibold text-lg">Column Guide</h3>
-            <span className="text-slate-600 text-sm">Understanding the field mapping structure</span>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-base">
-              <thead className="bg-slate-200 text-slate-700 uppercase text-sm font-semibold">
-                <tr>
-                  <th className="px-4 py-3 text-left w-1/6">Field</th>
-                  <th className="px-4 py-3 text-left w-1/8">Interpretation</th>
-                  <th className="px-4 py-3 text-left w-1/4">Bucket</th>
-                  <th className="px-4 py-3 text-left w-1/6">Target Path</th>
-                  <th className="px-4 py-3 text-left w-1/8">Transformation</th>
-                  <th className="px-4 py-3 text-left w-1/6">Indexed?</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-300 text-slate-700">
-                <tr className="bg-white">
-                  <td className="px-4 py-4 font-medium">
-                    <div className="text-slate-800 font-semibold mb-2 text-base">Source Field Name</div>
-                    <div className="text-sm text-slate-600">The original field name from the source system or specification</div>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="text-slate-800 font-semibold mb-2 text-base">Business Meaning</div>
-                    <div className="text-sm text-slate-600">Human-readable description of what this field represents</div>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="text-slate-800 font-semibold mb-2 text-base">Data Category</div>
-                    <div className="text-sm text-slate-600 space-y-1">
-                      <span className="block"><span className="inline-block w-4 h-4 bg-emerald-200 border border-emerald-500 rounded mr-2"></span>FHIR_CORE: Standard FHIR resource data</span>
-                      <span className="block"><span className="inline-block w-4 h-4 bg-purple-200 border border-purple-500 rounded mr-2"></span>APP: Application-specific metadata</span>
-                      <span className="block"><span className="inline-block w-4 h-4 bg-sky-200 border border-sky-500 rounded mr-2"></span>SEARCH: Indexed search fields</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="text-slate-800 font-semibold mb-2 text-base">FHIR Location</div>
-                    <div className="text-sm text-slate-600">JSON path where this field is stored in the FHIR resource or envelope</div>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="text-slate-800 font-semibold mb-2 text-base">Data Processing</div>
-                    <div className="text-sm text-slate-600">Any data conversion, formatting, or validation applied during mapping</div>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="text-slate-800 font-semibold mb-2 text-base">Search Ready</div>
-                    <div className="text-sm text-slate-600">Whether this field is indexed for fast querying and search operations</div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {!status.loading &&
-        !status.error &&
-        orderedDomains.map((domain) => (
-          <div key={domain} className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-            <div className="bg-slate-800 px-4 py-3">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Layers size={16} className="text-emerald-400" />
-                  <h3 className="text-slate-200 font-semibold">{domain}</h3>
-                </div>
-                <span className="text-slate-400 text-xs">{grouped.get(domain)?.length ?? 0} fields</span>
-              </div>
-              {DOMAIN_DESCRIPTIONS[domain] && (
-                <p className="text-slate-300 text-sm leading-relaxed">{DOMAIN_DESCRIPTIONS[domain]}</p>
-              )}
+        <>
+          {/* Column Guide (static) */}
+          <div className="bg-slate-100 border border-slate-300 rounded-xl overflow-hidden">
+            <div className="bg-slate-200 px-6 py-4 flex items-center gap-3">
+              <Layers size={20} className="text-blue-600 shrink-0" />
+              <h3 className="text-slate-800 font-semibold text-lg">Column Guide</h3>
+              <span className="text-slate-600 text-sm">Understanding the field mapping structure</span>
             </div>
-            <FieldTable rows={grouped.get(domain) ?? []} />
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-base">
+                <thead className="bg-slate-200 text-slate-700 uppercase text-sm font-semibold">
+                  <tr>
+                    <th className="px-4 py-3 text-left w-1/6">Field</th>
+                    <th className="px-4 py-3 text-left w-1/8">Interpretation</th>
+                    <th className="px-4 py-3 text-left w-1/4">Bucket</th>
+                    <th className="px-4 py-3 text-left w-1/6">Target Path</th>
+                    <th className="px-4 py-3 text-left w-1/8">Transformation</th>
+                    <th className="px-4 py-3 text-left w-1/6">Indexed?</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-300 text-slate-700">
+                  <tr className="bg-white">
+                    <td className="px-4 py-4 font-medium">
+                      <div className="text-slate-800 font-semibold mb-2 text-base">Source Field Name</div>
+                      <div className="text-sm text-slate-600">The original field name from the source system or specification</div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="text-slate-800 font-semibold mb-2 text-base">Business Meaning</div>
+                      <div className="text-sm text-slate-600">Human-readable description of what this field represents</div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="text-slate-800 font-semibold mb-2 text-base">Data Category</div>
+                      <div className="text-sm text-slate-600 space-y-1">
+                        <span className="block"><span className="inline-block w-4 h-4 bg-emerald-200 border border-emerald-500 rounded mr-2"></span>FHIR_CORE: Standard FHIR resource data</span>
+                        <span className="block"><span className="inline-block w-4 h-4 bg-purple-200 border border-purple-500 rounded mr-2"></span>APP: Application-specific metadata</span>
+                        <span className="block"><span className="inline-block w-4 h-4 bg-sky-200 border border-sky-500 rounded mr-2"></span>SEARCH: Indexed search fields</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="text-slate-800 font-semibold mb-2 text-base">FHIR Location</div>
+                      <div className="text-sm text-slate-600">JSON path where this field is stored in the FHIR resource or envelope</div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="text-slate-800 font-semibold mb-2 text-base">Data Processing</div>
+                      <div className="text-sm text-slate-600">Any data conversion, formatting, or validation applied during mapping</div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="text-slate-800 font-semibold mb-2 text-base">Search Ready</div>
+                      <div className="text-sm text-slate-600">Whether this field is indexed for fast querying and search operations</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
-        ))}
+
+          {/* Bucket filter pills + collapse all */}
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-slate-300 text-sm font-semibold">Filter by bucket:</span>
+            {Object.entries(BUCKET_META).map(([key, { label, active, inactive }]) => (
+              <button
+                key={key}
+                onClick={() => toggleBucket(key)}
+                className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all ${activeBuckets.has(key) ? active : inactive}`}
+              >
+                {label}
+              </button>
+            ))}
+            <button
+              onClick={toggleAll}
+              className="ml-auto px-3 py-1 text-xs text-slate-300 border border-slate-700 rounded-full hover:bg-slate-800 transition-all"
+            >
+              {allExpanded ? "Collapse All" : "Expand All"}
+            </button>
+          </div>
+
+          {/* Domain sections */}
+          {orderedDomains.map((domain) => {
+            const isExpanded   = expandedDomains.has(domain);
+            const domainRows   = filteredGrouped.get(domain) ?? [];
+            const totalFields  = grouped.get(domain)?.length ?? 0;
+            const visibleCount = domainRows.length;
+
+            return (
+              <div key={domain} className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+                <button
+                  onClick={() => toggleDomain(domain)}
+                  className="w-full bg-slate-800 px-4 py-3 text-left hover:bg-slate-700/60 transition-colors"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      {isExpanded
+                        ? <ChevronDown size={16} className="text-emerald-400 shrink-0" />
+                        : <ChevronRight size={16} className="text-emerald-400 shrink-0" />}
+                      <Layers size={16} className="text-emerald-400 shrink-0" />
+                      <h3 className="text-slate-200 font-semibold">{domain}</h3>
+                    </div>
+                    <span className="text-slate-400 text-xs shrink-0">
+                      {isFiltered
+                        ? `${visibleCount} / ${totalFields} fields`
+                        : `${totalFields} fields`}
+                    </span>
+                  </div>
+                  {DOMAIN_DESCRIPTIONS[domain] && (
+                    <p className="text-slate-300 text-sm leading-relaxed pl-8">{DOMAIN_DESCRIPTIONS[domain]}</p>
+                  )}
+                </button>
+
+                {isExpanded && domainRows.length > 0 && (
+                  <div className="animate-in slide-in-from-top-2 duration-200">
+                    <FieldTable rows={domainRows} />
+                  </div>
+                )}
+
+                {isExpanded && domainRows.length === 0 && (
+                  <p className="px-4 py-4 text-slate-500 text-sm italic">
+                    No fields match the current bucket filter.
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </>
+      )}
     </div>
   );
 }
