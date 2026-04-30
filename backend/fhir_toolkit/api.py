@@ -92,6 +92,8 @@ def health():
     """
     return {"status":"ok","tenant": settings.tenant}
 
+TENANT_DOCUMENT_LIMIT = 1000
+
 @app.post("/admin/seed", tags=["Admin API"], summary="Generate synthetic FHIR data")
 def admin_seed(
     patients: int = Body(50, description="Number of patients to generate"),
@@ -103,6 +105,24 @@ def admin_seed(
     """
     Generate synthetic FHIR data for testing and development.
     """
+    tenant_key = tenant or settings.tenant
+    coll = get_collection()
+
+    current_count = coll.count_documents({"tenant": tenant_key})
+    total_new = patients + (patients * encounters_per_patient) + practitioners + careteams
+    if current_count + total_new > TENANT_DOCUMENT_LIMIT:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "error": "tenant_limit_exceeded",
+                "message": f"Would exceed the per-tenant limit of {TENANT_DOCUMENT_LIMIT} documents.",
+                "tenant": tenant_key,
+                "current": current_count,
+                "requested": total_new,
+                "limit": TENANT_DOCUMENT_LIMIT,
+            }
+        )
+
     # 1) Generate canonical FHIR resources
     pats = generate_patients(patients)                 # List[Tuple[resource, app]]
     pracs = generate_practitioners(practitioners)      # List[Dict]
@@ -128,7 +148,6 @@ def admin_seed(
     teams_env = [(r, {}) for r in teams]
 
     # 5) Upsert all
-    tenant_key = tenant or settings.tenant
     total = 0
     total += upsert_documents(pats_env, tenant=tenant_key)
     total += upsert_documents(pracs_env, tenant=tenant_key)
@@ -164,6 +183,15 @@ def admin_wipe(
     res = coll.delete_many({"tenant": tenant_key})
     return {"ok": True, "deleted": res.deleted_count, "tenant": tenant_key}
 
+@app.get("/admin/tenants", tags=["Admin API"], summary="List all tenant keys")
+def admin_tenants():
+    """
+    Return a sorted list of all tenant keys that have documents in the database.
+    """
+    coll = get_collection()
+    tenants = sorted([t for t in coll.distinct("tenant") if t])
+    return {"tenants": tenants}
+
 @app.get("/admin/stats", tags=["Admin API"], summary="Get tenant statistics")
 def admin_stats(tenant: Optional[str] = Query(None, description="Override tenant for stats")):
     """
@@ -194,6 +222,7 @@ def admin_stats(tenant: Optional[str] = Query(None, description="Override tenant
     return {
         "tenant": tenant_key,
         "total_documents": total_documents,
+        "limit": TENANT_DOCUMENT_LIMIT,
         "resource_breakdown": breakdown
     }
 
