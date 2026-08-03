@@ -47,7 +47,12 @@ export const pathToView = (pathname) => {
   if (parts.length === 0) return GUIDE_VIEW;
   if (parts[0] !== "demo" || parts.length > 2) return null;
   if (parts.length === 1) return `demo:${DEFAULT_TAB}`;
-  const tab = decodeURIComponent(parts[1]);
+  let tab;
+  try {
+    tab = decodeURIComponent(parts[1]);
+  } catch {
+    return null;
+  }
   return DEMO_TABS.includes(tab) ? `demo:${tab}` : null;
 };
 
