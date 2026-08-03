@@ -1,4 +1,5 @@
 import './globals.css'
+import Providers from './providers'
 
 export const metadata = {
   title: 'MongoDB Hybrid FHIR ODL',
@@ -12,7 +13,7 @@ export default function RootLayout({ children }) {
         <link id="app-favicon" rel="icon" href="/fhir-icon.svg" />
       </head>
       <body>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

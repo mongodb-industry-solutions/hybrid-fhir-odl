@@ -10,19 +10,23 @@ import FhirApiTester from "./FhirApiTester";
 import FhirApiDocs from "./FhirApiDocs";
 import MappingShowcase from "./MappingShowcase";
 
-export default function FhirTabs() {
+// activeTab is owned by AppContainer's shared view state so the selected tab is
+// addressable as a URL for Demo Sherpa. Falls back to local state when unmanaged.
+export default function FhirTabs({ activeTab: activeTabProp, onActiveTabChange }) {
   const [enabled, setEnabled] = useState(true);
-  const [activeTab, setActiveTab] = useState("mappings");
-  
+  const [localTab, setLocalTab] = useState("mappings");
+  const activeTab = activeTabProp ?? localTab;
+
   useEffect(() => {
     const flag = process.env.NEXT_PUBLIC_ENABLE_FHIR;
     setEnabled(flag === undefined ? true : flag === "true");
   }, []);
-  
+
   const handleTabChange = (tabValue) => {
-    setActiveTab(tabValue);
+    if (onActiveTabChange) onActiveTabChange(tabValue);
+    else setLocalTab(tabValue);
   };
-  
+
   if (!enabled) return null;
   return (
     <div className="p-4 bg-slate-900 rounded-xl border border-slate-800">
@@ -30,7 +34,7 @@ export default function FhirTabs() {
         <Database className="text-blue-400" size={18} />
         <h2 className="text-slate-200 font-semibold">Hybrid FHIR ODL</h2>
       </div>
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="bg-slate-800">
           <TabsTrigger value="mappings" className="data-[state=active]:bg-slate-700">
             <GitCompare className="mr-2" size={14} /> Mappings
