@@ -3,6 +3,9 @@ FROM node:18-alpine
 WORKDIR /app
 
 COPY frontend/package*.json ./
+# demo-sherpa is a committed tarball (file:vendor/demo-sherpa-<version>.tgz), so
+# vendor/ must exist before install or a cold-cache build fails with ENOENT.
+COPY frontend/vendor ./vendor
 RUN npm install
 
 COPY frontend/ .

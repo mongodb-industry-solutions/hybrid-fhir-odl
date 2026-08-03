@@ -5,9 +5,12 @@ import FhirTabs from "./views/fhir/FhirTabs";
 import CobrandedLogo from "./CobrandedLogo";
 import ExplanationTab from "./views/ExplanationTab";
 import { Info, X, ArrowUp } from "lucide-react";
+import { useViewState } from "./demoSherpa/viewState";
 
 const AppContainer = () => {
-  const [showHelp, setShowHelp] = useState(true);
+  // Guide-vs-demo and the active tab live in shared view state so Demo Sherpa can
+  // address them as routes and replay them during a journey.
+  const { showingGuide: showHelp, activeTab, setActiveTab, toggleGuide, showDemo } = useViewState();
   const [showNotification, setShowNotification] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
@@ -15,11 +18,11 @@ const AppContainer = () => {
     setIsTransitioning(true);
     // Start the guide fade-out
     setTimeout(() => {
-      setShowHelp(false);
+      showDemo();
       setShowNotification(true);
       setIsTransitioning(false);
     }, 300); // Wait for fade-out animation
-    
+
     // Auto-hide notification after 5 seconds
     setTimeout(() => setShowNotification(false), 5300);
   };
@@ -27,7 +30,7 @@ const AppContainer = () => {
   const handleToggleView = () => {
     setIsTransitioning(true);
     setTimeout(() => {
-      setShowHelp(!showHelp);
+      toggleGuide();
       setIsTransitioning(false);
     }, 300); // Wait for fade-out animation
   };
@@ -102,7 +105,7 @@ const AppContainer = () => {
             </div>
           ) : (
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 ease-out">
-              <FhirTabs />
+              <FhirTabs activeTab={activeTab} onActiveTabChange={setActiveTab} />
             </div>
           )}
         </div>
