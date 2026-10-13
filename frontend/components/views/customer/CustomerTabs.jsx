@@ -38,7 +38,7 @@ function CustomerApiDocumentation() {
       <div className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 rounded-lg p-6 border border-purple-500/20">
         <h3 className="text-xl font-semibold text-slate-200 mb-4">Customer API Specification</h3>
         <p className="text-slate-400 mb-4">
-          This interface provides spec-compliant endpoints matching the customer's MDM Building requirements.
+          This interface provides spec-compliant endpoints matching the customer&apos;s MDM Building requirements.
           All endpoints support both GET and POST methods and return data in the standardized format:
         </p>
         <pre className="bg-slate-900 rounded p-3 text-sm overflow-x-auto border border-slate-700">
@@ -193,8 +193,8 @@ function CustomerApiDocumentation() {
                 <li>• <code className="text-purple-300">hospCode</code> - Hospital Code <span className="text-red-400">(Required)</span></li>
                 <li>• <code className="text-purple-300">doctorCode</code> - Doctor Code</li>
                 <li>• <code className="text-purple-300">specialistCode</code> - Specialist Code</li>
-                <li>• <code className="text-purple-300">statusCode</code> - Status Code (default: "AC")</li>
-                <li>• <code className="text-purple-300">caseType</code> - Array of case types (default: ["I","A"])</li>
+                <li>• <code className="text-purple-300">statusCode</code> - Status Code (default: &quot;AC&quot;)</li>
+                <li>• <code className="text-purple-300">caseType</code> - Array of case types (default: [&quot;I&quot;,&quot;A&quot;])</li>
                 <li>• <code className="text-purple-300">page</code> - Page number (default: 1)</li>
                 <li>• <code className="text-purple-300">limit</code> - Records per page (default: 20)</li>
               </ul>
