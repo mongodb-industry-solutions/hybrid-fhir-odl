@@ -4,7 +4,8 @@ const BACKEND_URL = process.env.BACKEND_URL || 'http://backend:3100';
 
 export async function GET(request, { params }) {
   try {
-    const path = params.path.join('/');
+    const { path: segments } = await params;
+    const path = segments.join('/');
     const searchParams = request.nextUrl.searchParams;
     const query = searchParams.toString() ? `?${searchParams}` : '';
 
@@ -36,7 +37,8 @@ export async function GET(request, { params }) {
 
 export async function POST(request, { params }) {
   try {
-    const path = params.path.join('/');
+    const { path: segments } = await params;
+    const path = segments.join('/');
     const body = await request.json();
 
     const response = await fetch(`${BACKEND_URL}/${path}`, {

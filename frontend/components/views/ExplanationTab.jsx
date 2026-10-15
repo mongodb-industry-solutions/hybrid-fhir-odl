@@ -238,7 +238,7 @@ const ExplanationTab = () => {
             <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">2</span>
             <div>
               <h3 className="font-medium text-slate-300">Generate Synthetic Clinical Data</h3>
-              <p className="text-sm text-slate-400">Use the Synthetic Clinical Data tab to populate the system with test data. This creates the foundation for testing and exploring the platform's capabilities.</p>
+              <p className="text-sm text-slate-400">Use the Synthetic Clinical Data tab to populate the system with test data. This creates the foundation for testing and exploring the platform&apos;s capabilities.</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
